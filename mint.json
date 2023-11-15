@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "LMNT",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
@@ -27,46 +27,49 @@
   },
   "tabs": [
     {
-      "name": "API Reference",
+      "name": "Python SDK",
       "url": "api-reference"
     }
   ],
   "anchors": [
     {
-      "name": "Documentation",
+      "name": "API Reference",
       "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "url": "https://discord.com/invite/QjV4Hqg59s"
     },
     {
       "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "icon": "discord",
+      "url": "https://discord.com/invite/QjV4Hqg59s"
     },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://lmnt.com"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
-      "pages": ["introduction", "quickstart", "development"]
-    },
-    {
-      "group": "Essentials",
-      "pages": ["essentials/markdown", "essentials/code", "essentials/images", "essentials/settings", "essentials/navigation"]
-    },
-    {
-      "group": "API Documentation",
-      "pages": ["api-reference/introduction"]
-    },
-    {
-      "group": "Endpoint Examples",
+      "group": "Speech",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "speech/synthesize-speech",
+        "speech/synthesize-speech-1"
+      ]
+    },
+    {
+      "group": "Voice",
+      "pages": [
+        "voice/create-voice",
+        "voice/list-voices",
+        "voice/voice-info",
+        "voice/update-voice",
+        "voice/delete-voice"
+      ]
+    },
+    {
+      "group": "Account",
+      "pages": [
+        "account-info"
       ]
     }
   ],

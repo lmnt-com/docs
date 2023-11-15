@@ -1,94 +1,127 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
+    "title": "LMNT",
+    "description": "",
     "version": "1.0.0"
   },
-  "servers": [
+  "tags": [
     {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
+      "name": "voice"
+    },
     {
-      "bearerAuth": []
+      "name": "speech"
     }
   ],
   "paths": {
-    "/plants": {
+    "/v1/ai/voice/list": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "summary": "List voices",
+        "deprecated": false,
+        "description": "Returns a list of voices available to you.",
+        "tags": [
+          "voice"
+        ],
         "parameters": [
           {
-            "name": "limit",
+            "name": "starred",
             "in": "query",
-            "description": "The maximum number of results to return",
+            "description": "If true, only returns voices that you have starred. Defaults to false.",
+            "required": false,
+            "example": "true",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
+            }
+          },
+          {
+            "name": "owner",
+            "in": "query",
+            "description": "Which owner's voices to return. Choose from `lmnt`, `me`, or `all`. Defaults to `all`.",
+            "required": false,
+            "example": "lmnt,me",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "description": "Your API key. View your API key in your account page on the website.",
+            "required": true,
+            "example": "5125c321ee36420ea9bef2341974e0f2b",
+            "schema": {
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Plant"
+                    "$ref": "#/components/schemas/voice"
+                  }
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Success",
+                    "value": [
+                      {
+                        "owner": "lmnt",
+                        "name": "curtis",
+                        "id": "s2342394274924234",
+                        "gender": "male",
+                        "type": "instant",
+                        "description": "Facere voluptates libero totam id. Quidem repudiandae consequatur at molestiae vero commodi fuga repellat voluptatem. Ab quaerat accusamus quam repellendus voluptatibus vitae repellendus.",
+                        "starred": true
+                      }
+                    ]
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Unexpected error",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "status"
+                  ]
                 }
               }
             }
@@ -96,32 +129,866 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/v1/ai/voice/{id}": {
+      "get": {
+        "summary": "Voice info",
+        "deprecated": false,
+        "description": "Returns details of a specific voice.",
+        "tags": [
+          "voice"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of plant to delete",
+            "description": "The `id` of the voice to update, which can be retrieved by a call to `List voices`.",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "description": "Your API key. View your API key in your account page on https://app.lmnt.com/account.",
+            "required": true,
+            "example": "5125c321ee36420ea9bef2341974e0f2b",
+            "schema": {
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/voice"
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Success",
+                    "value": {
+                      "owner": "lmnt",
+                      "name": "curtis",
+                      "id": "12342342353",
+                      "type": "instant",
+                      "description": "Maxime unde rerum fugit similique. Ullam aliquid cum numquam atque pariatur assumenda optio repudiandae. Officia molestias omnis blanditiis assumenda dicta repudiandae. Corrupti ullam debitis sequi. Minima atque ipsum. Quibusdam voluptas autem sunt est mollitia.",
+                      "starred": true,
+                      "gender": "male"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update voice",
+        "deprecated": false,
+        "description": "Updates metadata for a specific voice. Only provided fields will be changed.",
+        "tags": [
+          "voice"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The `id` of the voice to update, which can be retrieved by a call to `List voices`.",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "description": "Your API key. View your API key in your account page on https://app.lmnt.com/account.",
+            "required": true,
+            "example": "5125c321ee36420ea9bef2341974e0f2b",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The display name for this voice."
+                  },
+                  "starred": {
+                    "type": "boolean",
+                    "description": "If true, adds this voice to your starred list."
+                  },
+                  "gender": {
+                    "type": "string",
+                    "description": "A tag describing the gender of this voice, e.g. `male`, `female`, `nonbinary`."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A description of this voice. "
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "voice": {
+                      "$ref": "#/components/schemas/voice"
+                    }
+                  },
+                  "required": [
+                    "voice"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete voice",
+        "deprecated": false,
+        "description": "Deletes a voice and cancels any pending operations on it. Cannot be undone.",
+        "tags": [
+          "voice"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The `id` of the voice to delete, which can be retrieved by a call to `List voices`.",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "description": "Your API key. View your API key in your account page on https://app.lmnt.com/account.",
+            "required": true,
+            "example": "5125c321ee36420ea9bef2341974e0f2b",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/speech": {
+      "get": {
+        "summary": "Synthesize speech",
+        "deprecated": false,
+        "description": "Synthesizes speech for a supplied text string. Returns binary audio data in one of the supported audio formats. \nThis simplified version of synthesize can be directly used in HTML5 audio tags. ",
+        "tags": [
+          "speech"
+        ],
+        "parameters": [
+          {
+            "name": "X-API-Key",
+            "in": "query",
+            "description": "Your API key. View your API key in your account page on https://app.lmnt.com/account.",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voice",
+            "in": "query",
+            "description": "The voice id of the voice to use for synthesis. Voice ids can be retrieved by calls to `List voices` or `Voice info`",
+            "required": true,
+            "example": "stellaris",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "text",
+            "in": "query",
+            "description": "The text to synthesize",
+            "required": true,
+            "example": "This is a test.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "The format of the audio file, either `mp3` or `wav`; defaults to `mp3`",
+            "required": false,
+            "example": "mp3",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "speed",
+            "in": "query",
+            "description": "The talking speed of the generated speech. A Floating point value between `0.25` (slow) and `2.0` (fast); defaults to `1.0`",
+            "required": false,
+            "example": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "seed",
+            "in": "query",
+            "description": "Seed used to specify a different take; defaults to random",
+            "required": false,
+            "example": "1",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "length",
+            "in": "query",
+            "description": "Produce speech of this length in seconds; maximum 300.0 (5 minutes)",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Success",
+                    "value": "HTTP/1.1 200 OK\nContent-Type: audio/wav\nX-Sample-Rate: 24000\nX-Duration-Samples: 57000\n\n<binary data>"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Synthesize speech",
+        "deprecated": false,
+        "description": "Synthesizes speech for a supplied text string, returning advanced information. Returns an object that contains a base64-encoded audio file, the seed used in speech generation, and optionally an object detailing the duration of each word spoken.",
+        "tags": [
+          "speech"
+        ],
+        "parameters": [
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "description": "Your API key. View your API key in your account page on the website.",
+            "required": true,
+            "example": "{{X-API-Key}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "voice": {
+                    "type": "string",
+                    "description": "The voice id of the voice to use for synthesis. Voice ids can be retrieved by calls to `List voices` or `Voice info`",
+                    "example": "stellaris"
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "The text to synthesize",
+                    "example": "This is a test."
+                  },
+                  "format": {
+                    "type": "string",
+                    "description": "The format of the audio file. Either `mp3` or `wav`; defaults to `mp3`",
+                    "example": "mp3"
+                  },
+                  "speed": {
+                    "type": "number",
+                    "description": "The talking speed of the generated speech. A Floating point value between `0.25` (slow) and `2.0` (fast); defaults to `1.0`",
+                    "example": "1.3"
+                  },
+                  "seed": {
+                    "type": "integer",
+                    "description": "Seed used to specify a different take; defaults to random"
+                  },
+                  "length": {
+                    "type": "number",
+                    "description": "Produce speech of this length in seconds; maximum `300.0` (5 minutes)"
+                  },
+                  "return_durations": {
+                    "type": "string",
+                    "description": "If true, response will contain a durations field",
+                    "example": "true"
+                  }
+                },
+                "required": [
+                  "voice",
+                  "text"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "audio": {
+                      "type": "string",
+                      "description": "The base64-encoded audio file."
+                    },
+                    "seed": {
+                      "type": "integer",
+                      "description": "The seed used to generate this speech. Can be used to replicate a certain take."
+                    },
+                    "durations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string"
+                          },
+                          "start": {
+                            "type": "number",
+                            "description": "The start time, in seconds."
+                          },
+                          "duration": {
+                            "type": "number",
+                            "description": "The duration of this word, in seconds."
+                          }
+                        }
+                      },
+                      "description": "Outlines the spoken duration of each word and non-word (e.g. spaces, punctuation) in the generated speech."
+                    }
+                  },
+                  "required": [
+                    "audio",
+                    "seed"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/voice": {
+      "post": {
+        "summary": "Create voice",
+        "deprecated": false,
+        "description": "Submits a request to create a voice with a supplied voice configuration and a batch of input audio data.",
+        "tags": [
+          "voice"
+        ],
+        "parameters": [
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "description": "Your API key. View your API key in your account page on https://app.lmnt.com/account.",
+            "required": true,
+            "example": "5125c321ee36420ea9bef2341974e0f2b",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "metadata": {
+                    "type": "string",
+                    "description": "Must be the first field in the multipart/form-data request.\n\nThe metadata field is a JSON object containing the following fields:\n\nname (required): string; The display name for this voice\nenhance (required): bool; For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.\ntype (optional): string; The type of voice to create. Defaults to `instant`.\ngender (optional): string; A tag describing the gender of this voice. Has no effect on voice creation.\ndescription (optional): A text description of this voice.",
+                    "example": "{\"name\": \"Shanti\", \"type\": \"instant\", \"enhance\": false }"
+                  },
+                  "files": {
+                    "type": "string",
+                    "description": "One or more input audio files to train the voice in the form of binary .wav or .mp3 file attachments. Max attached files: 20. Max total file size: 250 MB. ",
+                    "example": "file:///Users/kaikato/Downloads/filename.wav"
+                  }
+                },
+                "required": [
+                  "metadata",
+                  "files"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique identifier of this voice."
+                    },
+                    "voice": {
+                      "$ref": "#/components/schemas/voice"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "voice"
+                  ]
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Success",
+                    "value": {
+                      "id": "123444566422",
+                      "voice": {
+                        "owner": "lmnt",
+                        "name": "curtis",
+                        "id": "123444566422",
+                        "state": "ready",
+                        "starred": true,
+                        "description": "Totam necessitatibus saepe repudiandae perferendis. Tempora iure provident. Consequatur debitis assumenda. Earum debitis cum.",
+                        "type": "instant",
+                        "gender": "male"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/account": {
+      "get": {
+        "summary": "Account info",
+        "deprecated": false,
+        "description": "Returns details about your account.",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "description": "Your API key. View your API key in your account page on https://app.lmnt.com/account.",
+            "required": true,
+            "example": "5125c321ee36420ea9bef2341974e0f2b",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "plan": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "The type of plan you are subscribed to."
+                        },
+                        "commercial_use_allowed": {
+                          "type": "boolean"
+                        },
+                        "character_limit": {
+                          "type": "integer",
+                          "description": "The number of characters you are allowed to synthesize in this billing period."
+                        },
+                        "instant_voice_limit": {
+                          "type": "integer",
+                          "description": "The number of instant voices you are allowed to create."
+                        },
+                        "professional_voice_limit": {
+                          "type": "integer",
+                          "description": "The number of professional voices you are allowed to create.",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "character_limit",
+                        "professional_voice_limit",
+                        "type",
+                        "commercial_use_allowed"
+                      ]
+                    },
+                    "usage": {
+                      "type": "object",
+                      "properties": {
+                        "characters": {
+                          "type": "integer",
+                          "description": "The number of characters you have synthesized in this billing period."
+                        },
+                        "instant_voices": {
+                          "type": "integer",
+                          "description": "The number of instant voices you have created."
+                        },
+                        "professional_voices": {
+                          "type": "integer",
+                          "description": "The number of professional voices you have created."
+                        }
+                      },
+                      "required": [
+                        "characters",
+                        "professional_voices"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "usage",
+                    "plan"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "status"
+                  ]
                 }
               }
             }
@@ -132,64 +999,61 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "voice": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of this voice."
+          },
           "name": {
-            "description": "The name of the plant",
-            "type": "string"
+            "type": "string",
+            "description": "The display name of this voice."
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+          "owner": {
+            "type": "string",
+            "description": "The owner of this voice.",
+            "enum": [
+              "LMNT",
+              "me",
+              "other"
+            ]
           },
-          {
-            "required": [
-              "id"
+          "state": {
+            "type": "string",
+            "description": "The state of this voice in the training pipeline (e.g., `ready`, `training`)."
+          },
+          "starred": {
+            "type": "boolean",
+            "description": "Whether this voice has been starred by you or not."
+          },
+          "gender": {
+            "type": "string",
+            "description": "A tag describing the gender of this voice, e.g. `male`, `female`, `nonbinary`."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "instant",
+              "professional"
             ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+            "description": "The method by which this voice was created: `instant` or `professional`."
           },
-          "message": {
-            "type": "string"
+          "description": {
+            "type": "string",
+            "description": "A text description of this voice.",
+            "nullable": true
           }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+        },
+        "required": [
+          "owner",
+          "name",
+          "id",
+          "state"
+        ],
+        "description": "FSAD"
       }
     }
-  }
+  },
+  "servers": []
 }

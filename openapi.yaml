@@ -1,0 +1,782 @@
+components:
+  schemas:
+    voice:
+      description: FSAD
+      properties:
+        description:
+          description: A text description of this voice.
+          nullable: true
+          type: string
+        gender:
+          description: A tag describing the gender of this voice, e.g. `male`, `female`,
+            `nonbinary`.
+          type: string
+        id:
+          description: The unique identifier of this voice.
+          type: string
+        name:
+          description: The display name of this voice.
+          type: string
+        owner:
+          description: The owner of this voice.
+          enum:
+          - LMNT
+          - me
+          - other
+          type: string
+        starred:
+          description: Whether this voice has been starred by you or not.
+          type: boolean
+        state:
+          description: The state of this voice in the training pipeline (e.g., `ready`,
+            `training`).
+          type: string
+        type:
+          description: 'The method by which this voice was created: `instant` or `professional`.'
+          enum:
+          - instant
+          - professional
+          type: string
+      required:
+      - owner
+      - name
+      - id
+      - state
+      type: object
+info:
+  description: ''
+  title: LMNT
+  version: 1.0.0
+openapi: 3.0.1
+paths:
+  /v1/account:
+    get:
+      deprecated: false
+      description: Returns details about your account.
+      parameters:
+      - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
+        example: 5125c321ee36420ea9bef2341974e0f2b
+        in: header
+        name: X-API-Key
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  plan:
+                    properties:
+                      character_limit:
+                        description: The number of characters you are allowed to synthesize
+                          in this billing period.
+                        type: integer
+                      commercial_use_allowed:
+                        type: boolean
+                      instant_voice_limit:
+                        description: The number of instant voices you are allowed
+                          to create.
+                        type: integer
+                      professional_voice_limit:
+                        description: The number of professional voices you are allowed
+                          to create.
+                        nullable: true
+                        type: integer
+                      type:
+                        description: The type of plan you are subscribed to.
+                        type: string
+                    required:
+                    - character_limit
+                    - professional_voice_limit
+                    - type
+                    - commercial_use_allowed
+                    type: object
+                  usage:
+                    properties:
+                      characters:
+                        description: The number of characters you have synthesized
+                          in this billing period.
+                        type: integer
+                      instant_voices:
+                        description: The number of instant voices you have created.
+                        type: integer
+                      professional_voices:
+                        description: The number of professional voices you have created.
+                        type: integer
+                    required:
+                    - characters
+                    - professional_voices
+                    type: object
+                required:
+                - usage
+                - plan
+                type: object
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+                title: ''
+                type: object
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                required:
+                - message
+                - status
+                title: ''
+                type: object
+          description: Unauthorized
+      summary: Account info
+      tags: []
+  /v1/ai/speech:
+    get:
+      deprecated: false
+      description: "Synthesizes speech for a supplied text string. Returns binary\
+        \ audio data in one of the supported audio formats. \nThis simplified version\
+        \ of synthesize can be directly used in HTML5 audio tags. "
+      parameters:
+      - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
+        example: ''
+        in: query
+        name: X-API-Key
+        required: true
+        schema:
+          type: string
+      - description: The voice id of the voice to use for synthesis. Voice ids can
+          be retrieved by calls to `List voices` or `Voice info`
+        example: stellaris
+        in: query
+        name: voice
+        required: true
+        schema:
+          type: string
+      - description: The text to synthesize
+        example: This is a test.
+        in: query
+        name: text
+        required: true
+        schema:
+          type: string
+      - description: The format of the audio file, either `mp3` or `wav`; defaults
+          to `mp3`
+        example: mp3
+        in: query
+        name: format
+        required: false
+        schema:
+          type: string
+      - description: The talking speed of the generated speech. A Floating point value
+          between `0.25` (slow) and `2.0` (fast); defaults to `1.0`
+        example: '1'
+        in: query
+        name: speed
+        required: false
+        schema:
+          type: number
+      - description: Seed used to specify a different take; defaults to random
+        example: '1'
+        in: query
+        name: seed
+        required: false
+        schema:
+          type: integer
+      - description: Produce speech of this length in seconds; maximum 300.0 (5 minutes)
+        example: ''
+        in: query
+        name: length
+        required: false
+        schema:
+          type: number
+      responses:
+        '200':
+          content:
+            '*/*':
+              examples:
+                '1':
+                  summary: Success
+                  value: 'HTTP/1.1 200 OK
+
+                    Content-Type: audio/wav
+
+                    X-Sample-Rate: 24000
+
+                    X-Duration-Samples: 57000
+
+
+                    <binary data>'
+              schema:
+                properties: {}
+                type: object
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+                title: ''
+                type: object
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                required:
+                - message
+                - status
+                title: ''
+                type: object
+          description: Unauthorized
+      summary: Synthesize speech
+      tags:
+      - speech
+    post:
+      deprecated: false
+      description: Synthesizes speech for a supplied text string, returning advanced
+        information. Returns an object that contains a base64-encoded audio file,
+        the seed used in speech generation, and optionally an object detailing the
+        duration of each word spoken.
+      parameters:
+      - description: Your API key. View your API key in your account page on the website.
+        example: '{{X-API-Key}}'
+        in: header
+        name: X-API-Key
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                format:
+                  description: The format of the audio file. Either `mp3` or `wav`;
+                    defaults to `mp3`
+                  example: mp3
+                  type: string
+                length:
+                  description: Produce speech of this length in seconds; maximum `300.0`
+                    (5 minutes)
+                  type: number
+                return_durations:
+                  description: If true, response will contain a durations field
+                  example: 'true'
+                  type: string
+                seed:
+                  description: Seed used to specify a different take; defaults to
+                    random
+                  type: integer
+                speed:
+                  description: The talking speed of the generated speech. A Floating
+                    point value between `0.25` (slow) and `2.0` (fast); defaults to
+                    `1.0`
+                  example: '1.3'
+                  type: number
+                text:
+                  description: The text to synthesize
+                  example: This is a test.
+                  type: string
+                voice:
+                  description: The voice id of the voice to use for synthesis. Voice
+                    ids can be retrieved by calls to `List voices` or `Voice info`
+                  example: stellaris
+                  type: string
+              required:
+              - voice
+              - text
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  audio:
+                    description: The base64-encoded audio file.
+                    type: string
+                  durations:
+                    description: Outlines the spoken duration of each word and non-word
+                      (e.g. spaces, punctuation) in the generated speech.
+                    items:
+                      properties:
+                        duration:
+                          description: The duration of this word, in seconds.
+                          type: number
+                        start:
+                          description: The start time, in seconds.
+                          type: number
+                        text:
+                          type: string
+                      type: object
+                    type: array
+                  seed:
+                    description: The seed used to generate this speech. Can be used
+                      to replicate a certain take.
+                    type: integer
+                required:
+                - audio
+                - seed
+                type: object
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+                title: ''
+                type: object
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                required:
+                - message
+                - status
+                title: ''
+                type: object
+          description: Unauthorized
+      summary: Synthesize speech
+      tags:
+      - speech
+  /v1/ai/voice:
+    post:
+      deprecated: false
+      description: Submits a request to create a voice with a supplied voice configuration
+        and a batch of input audio data.
+      parameters:
+      - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
+        example: 5125c321ee36420ea9bef2341974e0f2b
+        in: header
+        name: X-API-Key
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                files:
+                  description: 'One or more input audio files to train the voice in
+                    the form of binary .wav or .mp3 file attachments. Max attached
+                    files: 20. Max total file size: 250 MB. '
+                  example: file:///Users/kaikato/Downloads/filename.wav
+                  type: string
+                metadata:
+                  description: 'Must be the first field in the multipart/form-data
+                    request.
+
+
+                    The metadata field is a JSON object containing the following fields:
+
+
+                    name (required): string; The display name for this voice
+
+                    enhance (required): bool; For unclean audio with background noise,
+                    applies processing to attempt to improve quality. Not on by default
+                    as it can also degrade quality in some circumstances.
+
+                    type (optional): string; The type of voice to create. Defaults
+                    to `instant`.
+
+                    gender (optional): string; A tag describing the gender of this
+                    voice. Has no effect on voice creation.
+
+                    description (optional): A text description of this voice.'
+                  example: '{"name": "Shanti", "type": "instant", "enhance": false
+                    }'
+                  type: string
+              required:
+              - metadata
+              - files
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                '1':
+                  summary: Success
+                  value:
+                    id: '123444566422'
+                    voice:
+                      description: Totam necessitatibus saepe repudiandae perferendis.
+                        Tempora iure provident. Consequatur debitis assumenda. Earum
+                        debitis cum.
+                      gender: male
+                      id: '123444566422'
+                      name: curtis
+                      owner: lmnt
+                      starred: true
+                      state: ready
+                      type: instant
+              schema:
+                properties:
+                  id:
+                    description: The unique identifier of this voice.
+                    type: string
+                  voice:
+                    $ref: '#/components/schemas/voice'
+                required:
+                - id
+                - voice
+                title: ''
+                type: object
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+                title: ''
+                type: object
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                required:
+                - message
+                - status
+                title: ''
+                type: object
+          description: Unauthorized
+      summary: Create voice
+      tags:
+      - voice
+  /v1/ai/voice/list:
+    get:
+      deprecated: false
+      description: Returns a list of voices available to you.
+      parameters:
+      - description: If true, only returns voices that you have starred. Defaults
+          to false.
+        example: 'true'
+        in: query
+        name: starred
+        required: false
+        schema:
+          type: string
+      - description: Which owner's voices to return. Choose from `lmnt`, `me`, or
+          `all`. Defaults to `all`.
+        example: lmnt,me
+        in: query
+        name: owner
+        required: false
+        schema:
+          type: string
+      - description: Your API key. View your API key in your account page on the website.
+        example: 5125c321ee36420ea9bef2341974e0f2b
+        in: header
+        name: X-API-Key
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                '1':
+                  summary: Success
+                  value:
+                  - description: Facere voluptates libero totam id. Quidem repudiandae
+                      consequatur at molestiae vero commodi fuga repellat voluptatem.
+                      Ab quaerat accusamus quam repellendus voluptatibus vitae repellendus.
+                    gender: male
+                    id: s2342394274924234
+                    name: curtis
+                    owner: lmnt
+                    starred: true
+                    type: instant
+              schema:
+                items:
+                  $ref: '#/components/schemas/voice'
+                type: array
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+                title: ''
+                type: object
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                required:
+                - message
+                - status
+                title: ''
+                type: object
+          description: Unauthorized
+      summary: List voices
+      tags:
+      - voice
+  /v1/ai/voice/{id}:
+    delete:
+      deprecated: false
+      description: Deletes a voice and cancels any pending operations on it. Cannot
+        be undone.
+      parameters:
+      - description: The `id` of the voice to delete, which can be retrieved by a
+          call to `List voices`.
+        example: ''
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
+        example: 5125c321ee36420ea9bef2341974e0f2b
+        in: header
+        name: X-API-Key
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+                title: ''
+                type: object
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                required:
+                - message
+                - status
+                title: ''
+                type: object
+          description: Unauthorized
+      summary: Delete voice
+      tags:
+      - voice
+    get:
+      deprecated: false
+      description: Returns details of a specific voice.
+      parameters:
+      - description: The `id` of the voice to update, which can be retrieved by a
+          call to `List voices`.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
+        example: 5125c321ee36420ea9bef2341974e0f2b
+        in: header
+        name: X-API-Key
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                '1':
+                  summary: Success
+                  value:
+                    description: Maxime unde rerum fugit similique. Ullam aliquid
+                      cum numquam atque pariatur assumenda optio repudiandae. Officia
+                      molestias omnis blanditiis assumenda dicta repudiandae. Corrupti
+                      ullam debitis sequi. Minima atque ipsum. Quibusdam voluptas
+                      autem sunt est mollitia.
+                    gender: male
+                    id: '12342342353'
+                    name: curtis
+                    owner: lmnt
+                    starred: true
+                    type: instant
+              schema:
+                $ref: '#/components/schemas/voice'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+                title: ''
+                type: object
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                required:
+                - message
+                - status
+                title: ''
+                type: object
+          description: Unauthorized
+      summary: Voice info
+      tags:
+      - voice
+    put:
+      deprecated: false
+      description: Updates metadata for a specific voice. Only provided fields will
+        be changed.
+      parameters:
+      - description: The `id` of the voice to update, which can be retrieved by a
+          call to `List voices`.
+        example: ''
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
+        example: 5125c321ee36420ea9bef2341974e0f2b
+        in: header
+        name: X-API-Key
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                description:
+                  description: 'A description of this voice. '
+                  type: string
+                gender:
+                  description: A tag describing the gender of this voice, e.g. `male`,
+                    `female`, `nonbinary`.
+                  type: string
+                name:
+                  description: The display name for this voice.
+                  type: string
+                starred:
+                  description: If true, adds this voice to your starred list.
+                  type: boolean
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  voice:
+                    $ref: '#/components/schemas/voice'
+                required:
+                - voice
+                type: object
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+                title: ''
+                type: object
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                required:
+                - message
+                - status
+                title: ''
+                type: object
+          description: Unauthorized
+      summary: Update voice
+      tags:
+      - voice
+servers: []
+tags:
+- name: voice
+- name: speech
