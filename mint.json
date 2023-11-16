@@ -1,81 +1,118 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "LMNT",
-  "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+"name": "LMNT",
+"logo": {
+  "dark": "/logo/lmnt-logo-full.png",
+  "light": "/logo/lmnt-logo-full.png"
+},
+"favicon": "/favicon.svg",
+"colors": {
+ "primary": "#4984e3",
+ "light": "#4984e3",
+ "dark": "#4984e3",
+ "anchors": {
+   "from": "#e3496f",
+   "to": "#4984e3"
+ }
+},
+"topbarLinks": [
+ {
+   "name": "Support",
+   "url": "mailto:hello@lmnt.com"
+ }
+],
+"topbarCtaButton": {
+ "name": "Try Now",
+ "url": "https://app.lmnt.com"
+},
+"anchors": [
+  {
+    "name": "API Reference",
+    "icon": "cloud",
+    "url": "api-reference"
   },
-  "favicon": "/favicon.svg",
-  "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
-    "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
-    }
+  {
+    "name": "SDKs",
+    "icon": "puzzle-piece",
+    "url": "sdk"
   },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
-    }
-  ],
-  "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+  {
+    "name": "Changelog",
+    "icon": "clock",
+    "url": "changelog"
   },
-  "tabs": [
-    {
-      "name": "Python SDK",
-      "url": "api-reference"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "API Reference",
-      "icon": "book-open-cover",
-      "url": "https://discord.com/invite/QjV4Hqg59s"
-    },
-    {
-      "name": "Community",
-      "icon": "discord",
-      "url": "https://discord.com/invite/QjV4Hqg59s"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://lmnt.com"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Speech",
-      "pages": [
-        "speech/synthesize-speech",
-        "speech/synthesize-speech-1"
-      ]
-    },
-    {
-      "group": "Voice",
-      "pages": [
-        "voice/create-voice",
-        "voice/list-voices",
-        "voice/voice-info",
-        "voice/update-voice",
-        "voice/delete-voice"
-      ]
-    },
-    {
-      "group": "Account",
-      "pages": [
-        "account-info"
-      ]
-    }
-  ],
-  "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+  {
+    "name": "Community",
+    "icon": "discord",
+    "url": "https://discord.com/invite/QjV4Hqg59s"
+  },
+  {
+    "name": "Blog",
+    "icon": "newspaper",
+    "url": "https://lmnt.com"
   }
+],
+"navigation": [
+  {
+    "group": "Get Started",
+    "pages": ["introduction"]
+  },
+  {
+    "group": "Synthesis",
+    "pages": ["synthesis/overview"]
+  },
+  {
+    "group": "API Documentation",
+    "pages": ["api-reference/introduction", "api-reference/authentication"]
+  },
+  {
+    "group": "Overview",
+    "pages": ["sdk/introduction"]
+  },
+  {
+    "group": "Changelog",
+    "pages": ["changelog/introduction"]
+  },
+  {
+    "group": "Python SDK",
+    "pages": ["sdk/python/introduction", "sdk/python/reference"]
+  },
+  {
+    "group": "Node SDK",
+    "pages": ["sdk/node/introduction", "sdk/node/reference", "sdk/node/changelog"]
+  },
+  {
+    "group": "Unity",
+    "pages": ["sdk/unity/index", "sdk/unity/installation-guide", "sdk/unity/getting-started", "sdk/unity/api-reference", "sdk/unity/compatibility", "sdk/unity/changelog"]
+  },
+  
+  {
+    "group": "Speech",
+    "pages": [
+      "api-reference/speech/synthesize-speech",
+      "api-reference/speech/synthesize-speech-1"
+    ]
+  },
+  {
+    "group": "Voice",
+    "pages": [
+      "api-reference/voice/create-voice",
+      "api-reference/voice/list-voices",
+      "api-reference/voice/voice-info",
+      "api-reference/voice/update-voice",
+      "api-reference/voice/delete-voice"
+    ]
+  },
+  {
+    "group": "Account",
+    "pages": [
+      "api-reference/account-info"
+    ]
+  }
+],
+"footerSocials": {
+ "twitter": "https://twitter.com/lmnt_com",
+ "github": "https://github.com/lmnt-com",
+ "linkedin": "https://www.linkedin.com/company/lmnt"
+}
 }

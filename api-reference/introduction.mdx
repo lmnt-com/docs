@@ -1,33 +1,22 @@
 ---
-title: 'Introduction TEST'
-description: 'Example section for showcasing API endpoints'
+title: 'Introduction'
+description: 'The LMNT Speech REST API provides facilities for synthesizing emotive,
+human-like speech audio from text input. There is support for creating custom
+voices from a user-provided audio input data set. Those voices can then be used
+for speech synthesis, in addition to those already provided as part of the LMNT
+system.'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+If you are interested in accessing other functionality via an API (e.g. alignment data, bulk synthesis) please contact us at [feedback@lmnt.com](mailto:feedback@lmnt.com).
 
-## Welcome
-
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+## What's new
+| Date | Description |
+| -----|-------------|
+| Aug 28, 2023 | `synthesize` now accepts a `length` parameter to adjust audio output duration to the specified length |
+| Jul 13, 2023 | custom voice creation/cancellation API |
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
-
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
-```
+All requests need an API key. The API key is sent in each request through the
+`X-API-Key` header. New API keys can be obtained at the
+[LMNT Account](https://app.lmnt.com/account) page.

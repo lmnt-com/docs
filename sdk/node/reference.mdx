@@ -1,0 +1,219 @@
+---
+title: 'Reference'
+sidebarTitle: 'Reference'
+description: 'All the ways that you can use the Node SDK' 
+---
+
+## `Speech`
+The `Speech` class is your primary touch-point with the LMNT API. Import it into your module with `import Speech from 'lmnt-node'`.
+
+### Constructor
+
+> `new Speech(apiKey)`
+
+Constructing a `Speech` object requires an API key. Create an API key by visiting your [account page](https://app.lmnt.com/account) in our [speech playground](https://app.lmnt.com) and signing up for a (free) plan.
+
+### fetchVoices
+
+> `async fetchVoices()`
+
+Returns the voices available for use in speech synthesis calls.
+
+#### Return value
+An Object of Objects (`{String, {String, String}`) that describe the available voices. Here's a sample object:
+
+```javascript
+{
+  "shanti": {
+    "name": "Shanti",
+    "gender": "female",
+    "imageUrl": "https://api.lmnt.com/img/voice/shanti.webp"
+  }
+}
+```
+
+#### Notes
+
+- The keys of the Object (e.g. "shanti") are used to specify the voice in the synthesize speech request below.
+- Some voices may also have an `id` field; please ignore that field, it will be removed soon.
+
+### synthesize
+
+> `async synthesize(text, voice, options={})`
+
+Synthesizes speech for a supplied text string. Returns binary audio data in one of the supported audio formats.
+
+#### Parameters
+- `text`: the text to synthesize
+- `voice`: which voice to render; id is found using the `fetchVoices` call
+- `options`
+    - `format` (optional): `aac`, `mp3`, `wav`; defaults to `wav` (24kHz 16-bit mono)
+    - `speed` (optional): floating point value between 0.25 (slow) and 2.0 (fast); defaults to 1.0
+    - `seed` (optional): random seed used to specify a different take
+
+#### Return value
+A binary string containing the synthesized audio file.
+
+#### Notes
+- The `mp3` bitrate is 96kbps.
+
+### synthesizeStreaming
+> `synthesizeStreaming(voice)`
+
+Creates a new, full-duplex streaming session. You can use the returned
+connection object to concurrently stream text content to the server and receive
+speech data from the server.
+
+#### Parameters
+- `voice`: which voice to render; id is found using the `fetchVoices` call
+
+#### Return value
+A `StreamingSynthesisConnection` instance, which you can use to stream data.
+
+## `StreamingSynthesisConnection`
+
+This class represents a full-duplex streaming connection with the server. The
+expected use is to call `appendText` as text is produced and to iterate over
+the object to read audio. Make sure to call `finish()` when you're done
+submitting the entire text snippet.
+
+When you're done with the `Speech` instance, you can explicitly clean up its
+resource utilization by calling the `close()` method.
+
+### appendText
+
+> `appendText(text)`
+
+Sends additional text to synthesize to the server. The text can be split at any
+point. For example, the two snippets below are semantically equivalent:
+
+```js
+await conn.appendText('This is a test of ')
+await conn.appendText('the emergency broadcast system.')
+```
+
+```js
+await speech.appendText('This is a test of the eme')
+await speech.appendText('rgency broadcast system.')
+```
+
+#### Parameters
+- `text`: some or all of the text to synthesize
+
+#### Notes
+- audio is returned as a 96kbps mono MP3 stream with a sampling rate of 24kHz
+
+### Streaming Data Iterator
+
+The connection object provides an async iterator that yields audio data from
+the server as it arrives. Here's a short snippet that shows how to iterate over
+the data:
+
+```js
+for await (const message of connection) {
+  // `message` is a binary string with the audio data.
+  const audioBytes = Buffer.byteLength(message);
+  process.stdout.write(`Received ${audioBytes} bytes.`);
+  audioFile.write(message);
+}
+```
+
+### close
+
+> `close()`
+
+Releases resources associated with this instance.
+
+### finish
+
+> `finish()`
+
+Call this function when you've written all the text you're expecting to submit.
+It will flush any remaining data on the server and return the last chunks of
+audio as described above.
+
+## Sample code
+
+### Standard synthesis
+
+```js
+const speech = new Speech(process.env.LMNT_API_KEY);
+const voices = await speech.fetchVoices();
+const firstVoice = Object.keys(voiceResponse.voices)[0];
+const audioBuffer = await speech.synthesize('Hello World!', firstVoice, { format: 'mp3' });
+writeFileSync('/tmp/output.mp3', audioBuffer);
+```
+
+### Streaming synthesis + ChatGPT
+
+```js
+import 'dotenv/config';
+import { createWriteStream } from 'fs';
+import OpenAI from 'openai';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+
+import Speech from 'lmnt-node';
+
+const args = yargs(hideBin(process.argv))
+  .option('prompt', {
+    alias: 'p',
+    type: 'string',
+    describe: 'The prompt text to send to the chatbot.',
+    default: 'Read me the text of a short sci-fi story in the public domain.',
+  })
+  .option('output-file', {
+    alias: 'o',
+    type: 'string',
+    describe: 'The path to the file to which to write the synthesized audio.',
+    default: '/tmp/output.mp3'
+  })
+  .parse();
+
+// Place your `LMNT_API_KEY` and `OPENAI_API_KEY` in a `.env` file or set
+// them as environment variables.
+
+// Construct the LMNT speech client instance.
+const speech = new Speech(process.env.LMNT_API_KEY);
+
+// Prepare an output file to which we write streamed audio. This
+// could alternatively be piped to a media player or another remote client.
+const audioFile = createWriteStream(args.outputFile);
+
+// Construct the streaming connection with our desired voice
+// and the callback to process incoming audio data.
+const speechConnection = speech.synthesizeStreaming('mara-wilson');
+
+// Construct the OpenAI client instance.
+const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
+
+// Send a message to the OpenAI chatbot and stream the response.
+const chatConnection = await openai.chat.completions.create({
+  model: 'gpt-3.5-turbo',
+  messages: [{ role: 'user', content: args.prompt }],
+  stream: true,
+});
+
+const writeTask = async () => {
+  for await (const part of chatConnection) {
+    const message = part.choices[0]?.delta?.content || '';
+    process.stdout.write(message);
+    speechConnection.appendText(message);
+  }
+
+  // After `finish` is called, the server will close the connection
+  // when it has finished synthesizing.
+  speechConnection.finish();
+};
+
+const readTask = async () => {
+  for await (const message of speechConnection) {
+    const audioBytes = Buffer.byteLength(message);
+    process.stdout.write(` ** LMNT -- ${audioBytes} bytes ** `);
+    audioFile.write(message);
+  }
+  speechConnection.close();
+};
+
+await Promise.all([writeTask(), readTask()]);
+```

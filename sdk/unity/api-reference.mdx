@@ -1,0 +1,26 @@
+## `class LMNTSpeech : MonoBehavior`
+This is the primary class you'll interact with when using LMNT. You can acquire a reference
+to an instance of this class by calling `GetComponent` from your script.
+
+### `IEnumerator Prefetch()`
+This coroutine allows you to prefetch the dialogue from the network. It is not necessary to call
+this coroutine, but doing so can reduce the perceived latency of the network call.
+
+For example, you could call `Prefetch` inside the `Start` method:
+
+```csharp
+public class MyScript : MonoBehaviour {
+  private LMNTSpeech speech;
+
+  void Start() {
+    speech = GetComponent<LMNTSpeech>();
+    StartCoroutine(speech.Prefetch());
+  }
+}
+```
+
+and call `Talk` (described below) at a later time, e.g. on a game event.
+
+### `IEnumerator Talk()`
+This coroutine begins playback of the configured dialogue. Note that if `Prefetch` was not called
+prior to calling `Talk`, this coroutine will start a network request to get the dialogue.

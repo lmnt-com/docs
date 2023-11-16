@@ -1,0 +1,242 @@
+---
+title: 'Reference'
+sidebarTitle: 'Reference'
+description: 'All the ways that you can use the Python SDK' 
+---
+
+## Speech
+The `Speech` class is your primary touch-point with the LMNT API. Import it into your module with `from lmnt.api import Speech`.
+
+When you're done with the `Speech` instance, make sure to clean up by calling its `close()` method. Alternatively, you can use this class as an async context manager, which will call `close()` for you:
+
+```python
+async with Speech(API_KEY) as speech:
+  voices = await speech.list_voices()
+```
+
+### `__init__`
+
+> `__init__(api_key)`
+
+Constructing a `Speech` object requires an API key. Create an API key by visiting your [account page](https://app.lmnt.com/account) in our [speech playground](https://app.lmnt.com) and signing up for a (free) plan.
+
+### close
+
+> `async close()`
+
+Releases resources associated with this instance.
+
+### `list_voices`
+
+> `async list_voices()`
+
+Returns the voices available for use in speech synthesis calls.
+
+#### Return value
+A dictionary of dictionaries (`Dict[str, Dict[str, str]]`) that describe the available voices. Here's a sample object:
+
+```javascript
+{
+  "shanti": {
+    "name": "Shanti",
+    "gender": "female",
+    "imageUrl": "https://api.lmnt.com/img/voice/shanti.webp"
+  }
+}
+```
+
+#### Throws
+`lmnt.api.SpeechError`
+
+#### Notes
+
+- The keys of the dictionary (e.g. "shanti") are used to specify the voice in the synthesize speech request below.
+- Some voices may also have an `id` field; please ignore that field, it will be removed soon.
+
+### synthesize
+
+> `async synthesize(text, voice, **kwargs)`
+
+Synthesizes speech for a supplied text string. Returns binary audio data in one of the supported audio formats.
+
+#### Parameters
+- `text`: the text to synthesize
+- `voice`: which voice to render; id is found using the `list_voices` call
+- `**kwargs`
+    - `format` (optional): `aac`, `mp3`, `wav`; defaults to `wav` (24kHz 16-bit mono)
+    - `speed` (optional): floating point value between 0.25 (slow) and 2.0 (fast); defaults to 1.0
+    - `seed` (optional): the seed used to specify a different take; defaults to a random value.
+    - `durations`: (optional) whether to include word durations detail; defaults to false
+    - :new: `length` (optional): produce speech of this length in seconds; maximum 300.0 (5 minutes)
+
+#### Return value
+Unless otherwise specified below, the return value is a binary string
+containing the synthesized audio file.
+
+##### Duration details
+If `durations=True` is specified, the response will be a dictionary with the following keys:
+
+- `durations`: a sequential list of dictionaries with keys as below
+- `audio`: the binary audio data containing the synthesized audio file
+
+Each `durations` entry is a dictionary describing the duration of each word with the following keys:
+
+- `text`: the word itself
+- `phonemes`: a list of the phonemes comprising the word. Each phoneme is structured as a dictionary with the following keys:
+  - `phoneme`: the phoneme
+  - `duration`: the duration of the phoneme
+- `start`: the starting duration of the word, in seconds
+- `duration`: the overall duration of the word, in seconds
+
+
+#### Notes
+- The `mp3` bitrate is 96kbps.
+- :new: The `length` parameter specifies how long you want the output speech to be. We will automatically speed up / slow down the speech as needed to fit this length.
+
+### `synthesize_streaming`
+> `async synthesize_streaming(voice)`
+
+Creates a new, full-duplex streaming session. You can use the returned session object to concurrently stream text content to the server
+and receive speech data from the server.
+
+#### Parameters
+- `voice`: which voice to render; id is found using the `list_voices` call
+
+#### Return value
+A `StreamingSynthesisConnection` instance, which you can use to stream data.
+
+## `StreamingSynthesisConnection`
+This class represents a full-duplex streaming connection with the server. The expected use is to call `append_text` as text is produced
+and to iterate over the object to read audio. Make sure to call `finish()` when you're done submitting the entire text snippet.
+
+### `append_text`
+
+> `async append_text(text)`
+
+Sends additional text to synthesize to the server. The text can be split at any point. For example, the two snippets
+below are semantically equivalent:
+
+```python
+await conn.append_text('This is a test of ')
+await conn.append_text('the emergency broadcast system.')
+```
+
+```python
+await speech.append_text('This is a test of the eme')
+await speech.append_text('rgency broadcast system.')
+```
+
+### `__aiter__ / __anext__`
+
+> `async __aiter__()`
+
+> `async __anext__()`
+
+Iterates over audio data from the server. See the notes below for details on the audio format. Here's a short
+snippet that shows how to iterate over the data:
+
+```python
+conn = await speech.synthesize_streaming('mara-wilson')
+async for msg in conn:
+  if msg.type == WSMsgType.CLOSE:
+    break
+  msg.data  # contains a binary string with the audio data
+```
+
+#### Parameters
+- `text`: some or all of the text to synthesize
+
+#### Notes
+- audio is returned as a 96kbps mono MP3 stream with a sampling rate of 24kHz
+
+### finish
+
+> `async finish()`
+
+Call this function when you've written all the text you're expecting to submit. It will flush any remaining data on the server and return the
+last chunks of audio as described above.
+
+## Sample code
+
+### Standard synthesis
+```python
+import asyncio
+from lmnt.api import Speech
+
+LMNT_API_KEY = ... # Your API key here
+TEXT = 'This is a test of the emergency broadcast system.'
+
+async def main():
+  async with Speech(LMNT_API_KEY) as speech:
+    voices = await speech.list_voices()
+    first_voice = list(voices.keys())[0]
+    wav_file = await speech.synthesize(TEXT, first_voice)
+    with open('output.wav', 'wb') as f:
+      f.write(wav_file)
+
+if __name__ == '__main__':
+  asyncio.run(main())
+```
+### Streaming synthesis + ChatGPT
+```python
+import asyncio
+import openai
+
+from argparse import ArgumentParser
+from aiohttp import WSMsgType
+from lmnt.api import Speech
+
+
+LMNT_API_KEY = ... # Your LMNT API key here
+openai.api_key = ...  # Your OpenAI API key here
+MODEL = 'gpt-3.5-turbo'
+DEFAULT_PROMPT = "Tell me a story about the people of Foundation."
+
+
+async def reader_task(conn):
+  """Streams audio data from the server and writes it to `output.raw`."""
+  with open(f'output.raw', 'wb') as f:
+    async for msg in conn:
+      if msg.type == WSMsgType.CLOSE:
+        break
+      f.write(msg.data)
+
+
+async def writer_task(conn, prompt):
+  """Streams text from ChatGPT to LMNT."""
+  response = await openai.ChatCompletion.acreate(
+    model=MODEL,
+    messages=[{'role': 'user', 'content': prompt}],
+    temperature=0,
+    stream=True
+  )
+
+  async for chunk in response:
+    if 'choices' not in chunk:
+      continue
+    choice = chunk['choices'][0]
+    if 'delta' not in choice or 'content' not in choice['delta']:
+      continue
+    await conn.append_text(choice['delta']['content'])
+    print(choice['delta']['content'], end='', flush=True)
+
+  await conn.finish()
+
+
+async def main(args):
+  s = Speech(LMNT_API_KEY)
+  conn = await s.synthesize_streaming('mara-wilson')
+
+  t1 = asyncio.create_task(reader_task(conn))
+  t2 = asyncio.create_task(writer_task(conn, args.prompt))
+
+  await t1
+  await t2
+  await s.close()
+
+
+if __name__ == '__main__':
+  parser = ArgumentParser()
+  parser.add_argument('prompt', default=DEFAULT_PROMPT, nargs='?')
+  asyncio.run(main(parser.parse_args()))
+```
