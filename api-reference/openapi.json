@@ -1055,5 +1055,9 @@
       }
     }
   },
-  "servers": []
+  "servers": [
+    {
+      "url": "https://api.lmnt.com"
+    }
+  ]
 }

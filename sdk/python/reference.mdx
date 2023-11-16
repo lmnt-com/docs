@@ -1,24 +1,160 @@
 ---
 title: 'Reference'
-sidebarTitle: 'Reference'
 description: 'All the ways that you can use the Python SDK' 
 ---
 
-## Speech
-The `Speech` class is your primary touch-point with the LMNT API. Import it into your module with `from lmnt.api import Speech`.
+<Note>
+Make sure that you have installed the SDK properly. [Installation](/sdk/python/introduction#getting-started)
+</Note>
 
-When you're done with the `Speech` instance, make sure to clean up by calling its `close()` method. Alternatively, you can use this class as an async context manager, which will call `close()` for you:
+## Speech
+The `Speech` class is your primary touch-point with the LMNT API.
+
+Instantiate a `Speech` object with your <Tooltip tip='Create an API key by visiting your account page in our speech playground and signing up for a (free) plan.'>[LMNT API key](/api-reference/authentication):</Tooltip>
 
 ```python
-async with Speech(API_KEY) as speech:
-  voices = await speech.list_voices()
+from lmnt.api import Speech
+
+speech = Speech('LMNT_API_KEY')
 ```
 
-### `__init__`
+When you're done with the `Speech` instance, make sure to clean up by calling its `close()` method. 
 
-> `__init__(api_key)`
+```python
+await speech.close()
+```
 
-Constructing a `Speech` object requires an API key. Create an API key by visiting your [account page](https://app.lmnt.com/account) in our [speech playground](https://app.lmnt.com) and signing up for a (free) plan.
+Alternatively, you can use this class as an async context manager, which will call `close()` for you:
+
+```python
+async with Speech('LMNT_API_KEY') as speech:
+  pass
+```
+### list_voices
+
+> `async list_voices(**kwargs)`
+
+Returns the voices available for use in speech synthesis calls.
+
+```python
+voices = await speech.list_voices()
+```
+
+#### Parameters
+- `starred` boolean (optional): if `true`, only return starred voices; defaults to `false`
+- `owner` string (optional): Specify which voices to return. Choose from `lmnt`, `me`, or `all`. Defaults to `all`.
+
+#### Return value
+A list of voice metadata objects. Here's a sample object:
+
+```javascript
+[
+  {
+    "name": "Curtis",
+    "id": "curtis",
+    "state": "ready",
+    "owner": "LMNT",
+    "starred": false,
+    "gender": "M",
+    "description": "Curtis' voice carries the seasoned timbre of middle age, filled with warmth, curiosity, and a hint of wisdom gained over the years."
+  }
+]
+```
+
+### voice_info
+
+> `async voice_info(voice_id)`
+
+Returns details of a specific voice.
+
+```python
+voice = await speech.voice_info('voice_id')
+```
+
+#### Parameters
+- `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+
+#### Return value
+The voice metadata object (A dictionary containing details of the voice). Here's a sample object:
+
+```javascript
+  {
+    "name": "Curtis",
+    "id": "curtis",
+    "state": "ready",
+    "owner": "LMNT",
+    "starred": false,
+    "gender": "M",
+    "description": "Curtis' voice carries the seasoned timbre of middle age, filled with warmth, curiosity, and a hint of wisdom gained over the years."
+  }
+```
+
+### create_voice
+> `async create_voice(name, enhance, filenames, **kwargs)`
+
+Creates a new voice from a set of audio files. Returns the voice metadata object.
+
+#### Parameters
+- `name` string: the name of the voice
+- `enhance` boolean: For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
+- `filenames` [string]: A list of filenames to use for the voice.
+- Optional Parameters
+    - `type` string: The type of voice to create. Must be one of `instant` or `professional`. Defaults to `instant`.
+    - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
+    - `description` string: A description of the voice. Defaults to `None`.
+
+#### Return value
+The id of the newly created voice and its associated voice metadata object. Here's a sample object:
+
+```javascript
+{
+    "id": "123444566422",
+    "voice": {
+        "owner": "me",
+        "name": "new-voice",
+        "id": "123444566422",
+        "state": "ready",
+        "starred": false,
+        "description": "Totam necessitatibus saepe repudiandae perferendis. Tempora iure provident. Consequatur debitis assumenda. Earum debitis cum.",
+        "type": "instant",
+        "gender": "male"
+    }
+}
+```
+
+### update_voice
+> `async update_voice(voice_id, **kwargs)`
+
+Updates metadata for a specific voice. A voice that is not owned by you can only have its `starred` field updated. 
+Only provided fields will be changed.
+
+#### Parameters
+- `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+- Optional Parameters:
+    - `name` string: The name of the voice
+    - `starred` boolean: Whether the voice is starred by you
+    - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
+    - `description` string: A description of the voice.
+
+#### Return value
+The updated voice metadata object.
+
+### delete_voice
+> `async delete_voice(voice_id)`
+
+Deletes a voice and cancels any pending operations on it. The voice must be owned by you. Cannot be undone.
+
+#### Parameters
+- `voice_id` string: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`.
+
+#### Return value
+A success or error message. Here's a sample object:
+
+```javascript
+{
+    "success": "true"
+}
+```
 
 ### close
 
@@ -26,72 +162,57 @@ Constructing a `Speech` object requires an API key. Create an API key by visitin
 
 Releases resources associated with this instance.
 
-### `list_voices`
-
-> `async list_voices()`
-
-Returns the voices available for use in speech synthesis calls.
-
-#### Return value
-A dictionary of dictionaries (`Dict[str, Dict[str, str]]`) that describe the available voices. Here's a sample object:
-
-```javascript
-{
-  "shanti": {
-    "name": "Shanti",
-    "gender": "female",
-    "imageUrl": "https://api.lmnt.com/img/voice/shanti.webp"
-  }
-}
+```python
+await speech.close()
 ```
-
-#### Throws
-`lmnt.api.SpeechError`
-
-#### Notes
-
-- The keys of the dictionary (e.g. "shanti") are used to specify the voice in the synthesize speech request below.
-- Some voices may also have an `id` field; please ignore that field, it will be removed soon.
 
 ### synthesize
 
 > `async synthesize(text, voice, **kwargs)`
 
-Synthesizes speech for a supplied text string. Returns binary audio data in one of the supported audio formats.
+Synthesizes speech for a supplied text string.
 
 #### Parameters
-- `text`: the text to synthesize
-- `voice`: which voice to render; id is found using the `list_voices` call
+- `text`: The text to synthesize
+- `voice`: Which voice to render; id is found using the `list_voices` call
 - `**kwargs`
-    - `format` (optional): `aac`, `mp3`, `wav`; defaults to `wav` (24kHz 16-bit mono)
-    - `speed` (optional): floating point value between 0.25 (slow) and 2.0 (fast); defaults to 1.0
-    - `seed` (optional): the seed used to specify a different take; defaults to a random value.
-    - `durations`: (optional) whether to include word durations detail; defaults to false
-    - :new: `length` (optional): produce speech of this length in seconds; maximum 300.0 (5 minutes)
+    - `format` (optional): `aac`, `mp3`, `wav`; Defaults to `mp3` (24kHz 16-bit mono)
+    - `length` (optional): Produce speech of this length in seconds; maximum 300.0 (5 minutes).
+    - `return_durations` (optional): Whether to include word durations detail in the response; Defaults to false
+    - `return_seed` (optional): Whether to include the seed used for synthesis in the response; Defaults to false
+    - `speed` (optional): Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0
+    - `seed` (optional): The seed used to specify a different take; Defaults to a random value.
 
 #### Return value
-Unless otherwise specified below, the return value is a binary string
-containing the synthesized audio file.
-
-##### Duration details
-If `durations=True` is specified, the response will be a dictionary with the following keys:
-
-- `durations`: a sequential list of dictionaries with keys as below
-- `audio`: the binary audio data containing the synthesized audio file
+An object with the following keys:
+- `audio`: The binary audio file.
+- `durations`: The word durations detail. Only returned if `return_durations` is `True`.
+- `seed`: The seed used for synthesis. Only returned if `return_seed` is `True`.
 
 Each `durations` entry is a dictionary describing the duration of each word with the following keys:
-
 - `text`: the word itself
-- `phonemes`: a list of the phonemes comprising the word. Each phoneme is structured as a dictionary with the following keys:
-  - `phoneme`: the phoneme
-  - `duration`: the duration of the phoneme
-- `start`: the starting duration of the word, in seconds
+- `start`: the time at which the word starts, in seconds
 - `duration`: the overall duration of the word, in seconds
 
+Here is the schema for the return value:
+
+```javascript
+{
+  "audio": binary-audio-file,
+  "durations": [
+    {
+      "text": "string",
+      "start": 0,
+      "duration": 0
+    }
+  ],
+  "seed": "string"
+}
+```
 
 #### Notes
 - The `mp3` bitrate is 96kbps.
-- :new: The `length` parameter specifies how long you want the output speech to be. We will automatically speed up / slow down the speech as needed to fit this length.
+- The `length` parameter specifies how long you want the output speech to be. We will automatically speed up / slow down the speech as needed to fit this length.
 
 ### `synthesize_streaming`
 > `async synthesize_streaming(voice)`
@@ -100,7 +221,10 @@ Creates a new, full-duplex streaming session. You can use the returned session o
 and receive speech data from the server.
 
 #### Parameters
-- `voice`: which voice to render; id is found using the `list_voices` call
+- `voice` string: which voice to render; id is found using the `list_voices` call
+- Optional Parameters
+    - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0.
+    - `return_durations` boolean: Whether to include word durations detail in each response; Defaults to false.
 
 #### Return value
 A `StreamingSynthesisConnection` instance, which you can use to stream data.
@@ -138,9 +262,7 @@ snippet that shows how to iterate over the data:
 ```python
 conn = await speech.synthesize_streaming('mara-wilson')
 async for msg in conn:
-  if msg.type == WSMsgType.CLOSE:
-    break
-  msg.data  # contains a binary string with the audio data
+  msg.audio  # contains a binary string with the audio data
 ```
 
 #### Parameters
@@ -149,12 +271,23 @@ async for msg in conn:
 #### Notes
 - audio is returned as a 96kbps mono MP3 stream with a sampling rate of 24kHz
 
+
+### flush
+> `async flush()`
+
+Call this when you want to trigger the server to synthesize all the text it
+currently has and return the audio data. Audio will be returned via the
+async iterator. This is recommended to be used only sparingly, if at all, 
+as it can result in a less natural sounding speech. This could be useful if
+you are sure you have sent text that comes at a natural stop and want all the
+audio returned without closing the connection.
+
 ### finish
 
 > `async finish()`
 
 Call this function when you've written all the text you're expecting to submit. It will flush any remaining data on the server and return the
-last chunks of audio as described above.
+last chunks of audio via the async iterator. The connection will also be closed.
 
 ## Sample code
 
@@ -169,10 +302,10 @@ TEXT = 'This is a test of the emergency broadcast system.'
 async def main():
   async with Speech(LMNT_API_KEY) as speech:
     voices = await speech.list_voices()
-    first_voice = list(voices.keys())[0]
-    wav_file = await speech.synthesize(TEXT, first_voice)
+    first_voice = voices[0]['id']
+    synthesis = await speech.synthesize(TEXT, first_voice)
     with open('output.wav', 'wb') as f:
-      f.write(wav_file)
+      f.write(synthesis['audio'])
 
 if __name__ == '__main__':
   asyncio.run(main())
@@ -183,7 +316,6 @@ import asyncio
 import openai
 
 from argparse import ArgumentParser
-from aiohttp import WSMsgType
 from lmnt.api import Speech
 
 
@@ -197,9 +329,7 @@ async def reader_task(conn):
   """Streams audio data from the server and writes it to `output.raw`."""
   with open(f'output.raw', 'wb') as f:
     async for msg in conn:
-      if msg.type == WSMsgType.CLOSE:
-        break
-      f.write(msg.data)
+      f.write(msg['audio'])
 
 
 async def writer_task(conn, prompt):
