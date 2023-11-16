@@ -776,7 +776,8 @@ paths:
       summary: Update voice
       tags:
       - voice
-servers: []
+servers:
+  - url: https://api.lmnt.com
 tags:
 - name: voice
 - name: speech
