@@ -1,0 +1,63 @@
+---
+title: "Advanced Controls"
+description: "Fine-tune your synthesized speech."
+---
+
+Speech is controlled by inserting special `[tags]` in your input text. These tags are written in square brackets inline with the input text and control different aspects of the output. We currently support two types of tags which are described in their own sections below:
+- Pronunciation tags
+- Silence tags
+
+In addition to tags, our AI model takes hints from punctuation and surrounding context, so make sure to include it.
+
+**For example, this performance may come off as flat:**
+> This is the story of a bird… Did you know this bird lived on top of a mountain… This mountain was on an island.
+
+**Whereas this performance would come off better:**
+> This is the story of a bird! Did you know this bird lived on top of a mountain? This mountain was on an island.
+
+## Pronunciation tags
+When dealing with proper nouns or words with multiple possible pronunciations, you may want to use a different pronunciation than what LMNT produces by default. Pronunciation tags allow you to specify how an individual word should be pronounced.
+
+The tag format is `[word : arpabet]` where word is the word you want pronounced differently and arpabet is a space-separated list of ARPABET (what is this?) symbols.
+
+**Example:**
+The `[quick: K W IH1 K]` brown fox jumps over the lazy dog.
+
+## Silence tags
+It's often useful to insert silence in specific locations, and silence tags allow you to do just that.
+
+The tag format is `[#s]` or `[#ms]` where # is a number indicating how long you want the silence to be, and `s` and `ms` correspond to seconds and milliseconds respectively.
+
+**Examples:**
+>The quick brown fox jumps over `[1.2s]` the lazy dog.
+
+>The quick brown fox jumps over `[2s]` the lazy dog. `[500ms]` The dog barks.
+
+# FAQ
+What is ARPABET?
+
+ARPABET is a set of symbols that correspond to phonemes in English. It's like a “phonetic alphabet” that's used to indicate how a word is pronounced.
+Which ARPABET symbols does LMNT support?
+We support a simplified version of ARPABET as shown below. We also use stress markers (numbers after each vowel) to indicate which syllable is emphasized. For example, **EM**phasis → EH1 M F AH0 S IH0 S whereas empha**SIS** → EH2 M F AH0 S IH1 S
+
+**Vowels:**
+`AA AE AH AO AW AY EH ER EY IH IY OW OY UH UW`
+
+**Consonants:**
+`B CH D DH F G HH JH K L M N NG P R S SH T TH V W Y Z ZH`
+
+The mandatory number after a vowel indicates as follows:
+
+| number | meaning |
+| -- | ------------ |
+| 0 | not stressed |
+| 1 | primary stress |
+| 2 | secondary stress |
+
+e.g. AA0 AA1 AA2
+
+Example pronunciations:
+
+- Quack → K W AE1 K
+- Spider → S P AY1 D ER0
+- Mango → M AE1 NG G OW0

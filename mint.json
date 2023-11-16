@@ -5,7 +5,7 @@
   "dark": "/logo/lmnt-logo-full.png",
   "light": "/logo/lmnt-logo-full.png"
 },
-"favicon": "/favicon.svg",
+"favicon": "https://lmnt.com/favicon.svg",
 "colors": {
  "primary": "#4984e3",
  "light": "#4984e3",
@@ -45,11 +45,6 @@
     "name": "Community",
     "icon": "discord",
     "url": "https://discord.com/invite/QjV4Hqg59s"
-  },
-  {
-    "name": "Blog",
-    "icon": "newspaper",
-    "url": "https://lmnt.com"
   }
 ],
 "navigation": [
@@ -59,8 +54,12 @@
   },
   {
     "group": "Synthesis",
-    "pages": ["synthesis/overview"]
+    "pages": ["synthesis/overview", "synthesis/advanced-controls"]
   },
+  {
+    "group": "Voice",
+    "pages": ["voice/overview"]
+  }, 
   {
     "group": "API Documentation",
     "pages": ["api-reference/introduction", "api-reference/authentication"]
