@@ -1,0 +1,74 @@
+---
+title: 'StreamingSynthesisConnection'
+description: 'Reference for the StreamingSynthesisConnection class in the Python SDK'
+---
+
+This class represents a full-duplex streaming connection with the server. The expected use is to call `append_text` as text is produced
+and to iterate over the object to read audio. Make sure to call `finish()` when you're done submitting the entire text snippet.
+
+To create an instance of this class, use the [`synthesize_streaming`](speech#synthesize-streaming) method on the `Speech` class.
+
+```python
+speech = Speech('LMNT_API_KEY')
+conn = await speech.synthesize_streaming('mara-wilson')
+```
+
+## append_text
+
+> `async append_text(text)`
+
+Sends additional text to synthesize to the server. The text can be split at any point. For example, the two snippets
+below are semantically equivalent:
+
+```python
+await conn.append_text('This is a test of ')
+await conn.append_text('the emergency broadcast system.')
+```
+
+```python
+await speech.append_text('This is a test of the eme')
+await speech.append_text('rgency broadcast system.')
+```
+-----------
+
+## Async Iterator
+
+> `async __aiter__()`
+
+> `async __anext__()`
+
+Iterates over audio data from the server. See the notes below for details on the audio format. Here's a short
+snippet that shows how to iterate over the data:
+
+```python
+conn = await speech.synthesize_streaming('mara-wilson')
+async for msg in conn:
+  msg.audio  # contains a binary string with the audio data
+```
+
+### Parameters
+- `text` string: Some or all of the text to synthesize
+
+### Notes
+- audio is returned as a 96kbps mono MP3 stream with a sampling rate of 24kHz
+
+-----------
+
+## flush
+> `async flush()`
+
+Call this when you want to trigger the server to synthesize all the text it
+currently has and return the audio data. Audio will be returned via the
+async iterator. This is recommended to be used only sparingly, if at all, 
+as it can result in a less natural sounding speech. This could be useful if
+you are sure you have sent text that comes at a natural stop and want all the
+audio returned without closing the connection.
+
+-----------
+
+## finish
+
+> `async finish()`
+
+Call this function when you've written all the text you're expecting to submit. It will flush any remaining data on the server and return the
+last chunks of audio via the async iterator. The connection will also be closed.

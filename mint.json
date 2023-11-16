@@ -75,7 +75,12 @@
   },
   {
     "group": "Python SDK",
-    "pages": ["sdk/python/introduction", "sdk/python/reference"]
+    "pages": ["sdk/python/introduction", 
+      {
+        "group": "Reference",
+        "pages": ["sdk/python/reference/speech", "sdk/python/reference/streaming"]
+      },
+    "sdk/python/code"]
   },
   {
     "group": "Node SDK",

@@ -1,13 +1,12 @@
 ---
-title: 'Reference'
-description: 'All the ways that you can use the Python SDK' 
+title: 'Speech'
+description: 'Reference for the Speech class in the Python SDK'
 ---
 
 <Note>
 Make sure that you have installed the SDK properly. [Installation](/sdk/python/introduction#getting-started)
 </Note>
 
-## Speech
 The `Speech` class is your primary touch-point with the LMNT API.
 
 Instantiate a `Speech` object with your <Tooltip tip='Create an API key by visiting your account page in our speech playground and signing up for a (free) plan.'>[LMNT API key](/api-reference/authentication):</Tooltip>
@@ -30,7 +29,9 @@ Alternatively, you can use this class as an async context manager, which will ca
 async with Speech('LMNT_API_KEY') as speech:
   pass
 ```
-### list_voices
+-----------
+
+## list_voices
 
 > `async list_voices(**kwargs)`
 
@@ -40,11 +41,11 @@ Returns the voices available for use in speech synthesis calls.
 voices = await speech.list_voices()
 ```
 
-#### Parameters
+### Parameters
 - `starred` boolean (optional): if `true`, only return starred voices; defaults to `false`
 - `owner` string (optional): Specify which voices to return. Choose from `lmnt`, `me`, or `all`. Defaults to `all`.
 
-#### Return value
+### Return value
 A list of voice metadata objects. Here's a sample object:
 
 ```javascript
@@ -61,7 +62,9 @@ A list of voice metadata objects. Here's a sample object:
 ]
 ```
 
-### voice_info
+-----------
+
+## voice_info
 
 > `async voice_info(voice_id)`
 
@@ -71,10 +74,10 @@ Returns details of a specific voice.
 voice = await speech.voice_info('voice_id')
 ```
 
-#### Parameters
+### Parameters
 - `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
 
-#### Return value
+### Return value
 The voice metadata object (A dictionary containing details of the voice). Here's a sample object:
 
 ```javascript
@@ -89,12 +92,14 @@ The voice metadata object (A dictionary containing details of the voice). Here's
   }
 ```
 
-### create_voice
+-----------
+
+## create_voice
 > `async create_voice(name, enhance, filenames, **kwargs)`
 
 Creates a new voice from a set of audio files. Returns the voice metadata object.
 
-#### Parameters
+### Parameters
 - `name` string: the name of the voice
 - `enhance` boolean: For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
 - `filenames` [string]: A list of filenames to use for the voice.
@@ -103,7 +108,7 @@ Creates a new voice from a set of audio files. Returns the voice metadata object
     - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
     - `description` string: A description of the voice. Defaults to `None`.
 
-#### Return value
+### Return value
 The id of the newly created voice and its associated voice metadata object. Here's a sample object:
 
 ```javascript
@@ -122,13 +127,15 @@ The id of the newly created voice and its associated voice metadata object. Here
 }
 ```
 
-### update_voice
+-----------
+
+## update_voice
 > `async update_voice(voice_id, **kwargs)`
 
 Updates metadata for a specific voice. A voice that is not owned by you can only have its `starred` field updated. 
 Only provided fields will be changed.
 
-#### Parameters
+### Parameters
 - `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
 - Optional Parameters:
     - `name` string: The name of the voice
@@ -136,18 +143,20 @@ Only provided fields will be changed.
     - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
     - `description` string: A description of the voice.
 
-#### Return value
+### Return value
 The updated voice metadata object.
 
-### delete_voice
+-----------
+
+## delete_voice
 > `async delete_voice(voice_id)`
 
 Deletes a voice and cancels any pending operations on it. The voice must be owned by you. Cannot be undone.
 
-#### Parameters
+### Parameters
 - `voice_id` string: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`.
 
-#### Return value
+### Return value
 A success or error message. Here's a sample object:
 
 ```javascript
@@ -156,7 +165,9 @@ A success or error message. Here's a sample object:
 }
 ```
 
-### close
+-----------
+
+## close
 
 > `async close()`
 
@@ -166,13 +177,15 @@ Releases resources associated with this instance.
 await speech.close()
 ```
 
-### synthesize
+-----------
+
+## synthesize
 
 > `async synthesize(text, voice, **kwargs)`
 
 Synthesizes speech for a supplied text string.
 
-#### Parameters
+### Parameters
 - `text`: The text to synthesize
 - `voice`: Which voice to render; id is found using the `list_voices` call
 - `**kwargs`
@@ -183,7 +196,7 @@ Synthesizes speech for a supplied text string.
     - `speed` (optional): Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0
     - `seed` (optional): The seed used to specify a different take; Defaults to a random value.
 
-#### Return value
+### Return value
 An object with the following keys:
 - `audio`: The binary audio file.
 - `durations`: The word durations detail. Only returned if `return_durations` is `True`.
@@ -210,81 +223,23 @@ Here is the schema for the return value:
 }
 ```
 
-#### Notes
+### Notes
 - The `mp3` bitrate is 96kbps.
 - The `length` parameter specifies how long you want the output speech to be. We will automatically speed up / slow down the speech as needed to fit this length.
 
-### synthesize_streaming
+-----------
+
+## synthesize_streaming
 > `async synthesize_streaming(voice)`
 
 Creates a new, full-duplex streaming session. You can use the returned session object to concurrently stream text content to the server
 and receive speech data from the server.
 
-#### Parameters
+### Parameters
 - `voice` string: which voice to render; id is found using the `list_voices` call
 - Optional Parameters
     - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0.
     - `return_durations` boolean: Whether to include word durations detail in each response; Defaults to false.
 
-#### Return value
+### Return value
 A `StreamingSynthesisConnection` instance, which you can use to stream data.
-
-## StreamingSynthesisConnection
-This class represents a full-duplex streaming connection with the server. The expected use is to call `append_text` as text is produced
-and to iterate over the object to read audio. Make sure to call `finish()` when you're done submitting the entire text snippet.
-
-### `append_text`
-
-> `async append_text(text)`
-
-Sends additional text to synthesize to the server. The text can be split at any point. For example, the two snippets
-below are semantically equivalent:
-
-```python
-await conn.append_text('This is a test of ')
-await conn.append_text('the emergency broadcast system.')
-```
-
-```python
-await speech.append_text('This is a test of the eme')
-await speech.append_text('rgency broadcast system.')
-```
-
-### `__aiter__ / __anext__`
-
-> `async __aiter__()`
-
-> `async __anext__()`
-
-Iterates over audio data from the server. See the notes below for details on the audio format. Here's a short
-snippet that shows how to iterate over the data:
-
-```python
-conn = await speech.synthesize_streaming('mara-wilson')
-async for msg in conn:
-  msg.audio  # contains a binary string with the audio data
-```
-
-#### Parameters
-- `text` string: Some or all of the text to synthesize
-
-#### Notes
-- audio is returned as a 96kbps mono MP3 stream with a sampling rate of 24kHz
-
-
-### flush
-> `async flush()`
-
-Call this when you want to trigger the server to synthesize all the text it
-currently has and return the audio data. Audio will be returned via the
-async iterator. This is recommended to be used only sparingly, if at all, 
-as it can result in a less natural sounding speech. This could be useful if
-you are sure you have sent text that comes at a natural stop and want all the
-audio returned without closing the connection.
-
-### finish
-
-> `async finish()`
-
-Call this function when you've written all the text you're expecting to submit. It will flush any remaining data on the server and return the
-last chunks of audio via the async iterator. The connection will also be closed.
