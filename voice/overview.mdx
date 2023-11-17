@@ -21,7 +21,7 @@ and can start using this voice in all of your applications.
 Users are limited to a number of professional voice creations based on their [plan](https://lmnt.com/pricing/).
 
 ## How to create a voice
-You can create a voice in our web app or via our API.
+You can create a voice in our web app or via our API and SDKs.
 
 ### Web app
 To create a voice in our web app, simply navigate to the [cloning page](https://app.lmnt.com/clone-a-voice).
@@ -53,3 +53,17 @@ curl --request POST \
 <Warning> Don't forget to get your own [API Key!](/api-reference/authentication) </Warning>
 
 If you choose to use the API, you can create both instant and professional voices.
+
+### SDKs
+We also offer SDKs for Python and Node.js that make it easy to create voices. Learn more about our SDKs [here](/sdk).
+
+## How to use a voice
+Once the voice is ready to use, you can use it to synthesize text.
+
+In the [Speech Playground](https://app.lmnt.com), the voice will appear in your list of voices.
+
+In the APIs and SDKs, you will need the voice id. You can find this in the [voice list](/api-reference/voice/list-voices) or in the endpoint.
+
+## How to delete a voice
+Currently, you can only delete a voice using our API or SDKs. You can use the [delete voice endpoint](/api-reference/voice/delete-voice) to delete a voice by id
+or use the equivalent method in your SDK.
