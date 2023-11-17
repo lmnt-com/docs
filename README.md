@@ -1,6 +1,6 @@
 # Mintlify Starter Kit
 
-Test message.
+Test message from gh account.
 
 Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including
 
