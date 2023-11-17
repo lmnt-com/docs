@@ -1,0 +1,19 @@
+---
+title: "Optimizing for Low Latency"
+description: "How to generate speech from text as quickly as possible."
+---
+
+There are several ways that you can generate speech from text as quickly as possible. 
+This page describes some of the techniques that you can use to optimize for low latency.
+
+## Use streaming synthesis
+Streaming synthesis is generally the fastest way to generate speech from text. 
+It will return audio as soon as it is available, rather than waiting for the entire audio to be generated.
+All of our [client libraries](/sdk) support streaming synthesis.
+
+## Use `wav` format instead of `mp3`
+The `wav` format is faster to generate than `mp3`. The default for synthesis in our SDKs and REST API is
+`mp3`, so you will need to explicitly pass in `format=wav` to use `wav` format. 
+
+<Info> Our [Speech Playground](https://app.lmnt.com) currently
+uses `wav` format. </Info>

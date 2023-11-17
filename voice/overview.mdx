@@ -3,3 +3,53 @@ title: "Overview"
 description: "Learn how LMNT's voice creation works."
 ---
 
+Our voices are the backbone of our product and we're proud to offer a variety of voice creation options to suit your needs.
+
+
+## Types of voices
+LMNT offers two types of voice creation: **instant** and **professional**.
+
+### Instant voices
+Instant voices are available immediately in all of your applications. While they may not always be perfect,
+they are often still of a very high quality. Instant voices are a great way to quickly test out a voice.
+
+### Professional voices
+Professional voices are fine-tuned to sound as natural, accurate, and lifelike as possible. 
+They require some time to fully train. After completion, you will receive an email notification
+and can start using this voice in all of your applications.
+
+Users are limited to a number of professional voice creations based on their [plan](https://lmnt.com/pricing/).
+
+## How to create a voice
+You can create a voice in our web app or via our API.
+
+### Web app
+To create a voice in our web app, simply navigate to the [cloning page](https://app.lmnt.com/clone-a-voice).
+Upload a speech sample, give the voice a name, and click "submit". 
+
+Note that our web app only allows professional voice creations at the moment. If you would like to create an instant voice, use the API.
+
+Some tips:
+- Source material should:
+    - Contain only one person's voice, in English
+    - Not contain background noise/music
+- Consider [Adobe's speech enhancer](https://podcast.adobe.com/enhance) if your speech is not professionally recorded
+- If cutting larger source material down:
+    - Leave gaps between sentences (good)
+    - Or upload sections as separate files (best)
+
+### API
+To create a voice via our REST API, you can use the [create voice endpoint](/api-reference/voice/create-voice).
+
+You can use a curl command like this to create a voice in your terminal:
+```bash
+curl --request POST \
+  --url https://api.lmnt.com/v1/ai/voice \
+  --header 'Content-Type: multipart/form-data' \
+  --header 'X-API-Key: 5125c321ee36420ea9bef2341974e0f2b' \
+  --form files=file:///Users/user/Downloads/filename.wav \
+  --form 'metadata={"name": "My Voice", "type": "instant", "enhance": true }'
+  ```
+<Warning> Don't forget to get your own [API Key!](/api-reference/authentication) </Warning>
+
+If you choose to use the API, you can create both instant and professional voices.

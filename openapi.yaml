@@ -396,26 +396,8 @@ paths:
                   example: file:///Users/kaikato/Downloads/filename.wav
                   type: string
                 metadata:
-                  description: 'Must be the first field in the multipart/form-data
-                    request.
-
-
-                    The metadata field is a JSON object containing the following fields:
-
-
-                    name (required): string; The display name for this voice
-
-                    enhance (required): bool; For unclean audio with background noise,
-                    applies processing to attempt to improve quality. Not on by default
-                    as it can also degrade quality in some circumstances.
-
-                    type (optional): string; The type of voice to create. Defaults
-                    to `instant`.
-
-                    gender (optional): string; A tag describing the gender of this
-                    voice. Has no effect on voice creation.
-
-                    description (optional): A text description of this voice.'
+                  description: 'A JSON object containing the voice configuration
+                    noted above'
                   example: '{"name": "Shanti", "type": "instant", "enhance": false
                     }'
                   type: string

@@ -8,7 +8,21 @@ description: A Node.js module to provide convenient access to the LMNT API from 
 </Card>
 
 ## Installing
-`npm install lmnt-node` or `yarn add lmnt-node` will install the latest LMNT SDK.
+
+To install the latest version, use either of the following:
+<CodeGroup>
+```bash npm
+npm install lmnt-node
+```
+```bash yarn
+yarn add lmnt-node
+```
+</CodeGroup>
+
+The SDK is now ready to use. The `Speech` class is your primary touch-point with the LMNT API. Import it as follows:
+```javascript
+import Speech from "lmnt-node";
+```
 
 ## Authentication
 You will need an API key to use our SDKs. Go to [https://app.lmnt.com](https://app.lmnt.com) to sign up for an account and get your API key.

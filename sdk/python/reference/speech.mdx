@@ -42,8 +42,8 @@ voices = await speech.list_voices()
 ```
 
 ### Parameters
-- `starred` boolean (optional): if `true`, only return starred voices; defaults to `false`
-- `owner` string (optional): Specify which voices to return. Choose from `lmnt`, `me`, or `all`. Defaults to `all`.
+- `starred` bool (optional): if `true`, only return starred voices; Defaults to `false`
+- `owner` str (optional): Specify which voices to return. Choose from `lmnt`, `me`, or `all`. Defaults to `all`.
 
 ### Return value
 A list of voice metadata objects. Here's a sample object:
@@ -75,7 +75,7 @@ voice = await speech.voice_info('voice_id')
 ```
 
 ### Parameters
-- `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+- `voice_id` str: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
 
 ### Return value
 The voice metadata object (A dictionary containing details of the voice). Here's a sample object:
@@ -99,14 +99,18 @@ The voice metadata object (A dictionary containing details of the voice). Here's
 
 Creates a new voice from a set of audio files. Returns the voice metadata object.
 
+```python
+voice = await speech.create_voice('new-voice', True, ['file1.mp3', 'file2.mp3'])
+```
+
 ### Parameters
-- `name` string: the name of the voice
-- `enhance` boolean: For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
-- `filenames` [string]: A list of filenames to use for the voice.
+- `name` str: the name of the voice
+- `enhance` bool: For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
+- `filenames` [str]: A list of filenames to use for the voice.
 - Optional Parameters
-    - `type` string: The type of voice to create. Must be one of `instant` or `professional`. Defaults to `instant`.
-    - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
-    - `description` string: A description of the voice. Defaults to `None`.
+    - `type` str: The type of voice to create. Must be one of `instant` or `professional`. Defaults to `instant`.
+    - `gender` str: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
+    - `description` str: A description of the voice. Defaults to `None`.
 
 ### Return value
 The id of the newly created voice and its associated voice metadata object. Here's a sample object:
@@ -135,13 +139,17 @@ The id of the newly created voice and its associated voice metadata object. Here
 Updates metadata for a specific voice. A voice that is not owned by you can only have its `starred` field updated. 
 Only provided fields will be changed.
 
+```python
+updated_voice = await speech.update_voice('voice_id', name='new-voice', starred=True)
+```
+
 ### Parameters
-- `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+- `voice_id` str: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
 - Optional Parameters:
-    - `name` string: The name of the voice
-    - `starred` boolean: Whether the voice is starred by you
-    - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
-    - `description` string: A description of the voice.
+    - `name` str: The name of the voice
+    - `starred` bool: Whether the voice is starred by you
+    - `gender` str: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
+    - `description` str: A description of the voice.
 
 ### Return value
 The updated voice metadata object.
@@ -153,8 +161,12 @@ The updated voice metadata object.
 
 Deletes a voice and cancels any pending operations on it. The voice must be owned by you. Cannot be undone.
 
+```python
+await speech.delete_voice('voice_id')
+```
+
 ### Parameters
-- `voice_id` string: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`.
+- `voice_id` str: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`.
 
 ### Return value
 A success or error message. Here's a sample object:
@@ -186,15 +198,15 @@ await speech.close()
 Synthesizes speech for a supplied text string.
 
 ### Parameters
-- `text`: The text to synthesize
-- `voice`: Which voice to render; id is found using the `list_voices` call
+- `text` str: The text to synthesize
+- `voice` str: Which voice to render; id is found using the `list_voices` call
 - `**kwargs`
-    - `format` (optional): `aac`, `mp3`, `wav`; Defaults to `mp3` (24kHz 16-bit mono)
-    - `length` (optional): Produce speech of this length in seconds; maximum 300.0 (5 minutes).
-    - `return_durations` (optional): Whether to include word durations detail in the response; Defaults to false
-    - `return_seed` (optional): Whether to include the seed used for synthesis in the response; Defaults to false
-    - `speed` (optional): Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0
-    - `seed` (optional): The seed used to specify a different take; Defaults to a random value.
+    - `format` str: `aac`, `mp3`, `wav`; Defaults to `mp3` (24kHz 16-bit mono)
+    - `length` float: Produce speech of this length in seconds; maximum 300.0 (5 minutes).
+    - `return_durations` bool: Whether to include word durations detail in the response; Defaults to false
+    - `return_seed` bool: Whether to include the seed used for synthesis in the response; Defaults to false
+    - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0
+    - `seed` int: The seed used to specify a different take; Defaults to a random value.
 
 ### Return value
 An object with the following keys:
@@ -230,7 +242,7 @@ Here is the schema for the return value:
 -----------
 
 ## synthesize_streaming
-> `async synthesize_streaming(voice)`
+> `async synthesize_streaming(voice, **kwargs)`
 
 Creates a new, full-duplex streaming session. You can use the returned session object to concurrently stream text content to the server
 and receive speech data from the server.
@@ -239,7 +251,7 @@ and receive speech data from the server.
 - `voice` string: which voice to render; id is found using the `list_voices` call
 - Optional Parameters
     - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0.
-    - `return_durations` boolean: Whether to include word durations detail in each response; Defaults to false.
+    - `return_extras` bool: Whether to return extra data (durations data and warnings) with each audio chunk.
 
 ### Return value
 A `StreamingSynthesisConnection` instance, which you can use to stream data.

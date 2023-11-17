@@ -5,7 +5,7 @@
   "dark": "/logo/lmnt-logo-full.png",
   "light": "/logo/lmnt-logo-full.png"
 },
-"favicon": "https://lmnt.com/favicon.svg",
+"favicon": "favicon.svg",
 "colors": {
  "primary": "#4984e3",
  "light": "#4984e3",
@@ -54,7 +54,7 @@
   },
   {
     "group": "Synthesis",
-    "pages": ["synthesis/overview", "synthesis/advanced-controls"]
+    "pages": ["synthesis/overview", "synthesis/advanced-controls", "synthesis/low-latency"]
   },
   {
     "group": "Voice",
@@ -83,7 +83,12 @@
   },
   {
     "group": "Node SDK",
-    "pages": ["sdk/node/introduction", "sdk/node/reference", "sdk/node/changelog"]
+    "pages": ["sdk/node/introduction", 
+      {
+        "group": "Reference",
+        "pages": ["sdk/node/reference/speech", "sdk/node/reference/streaming"]
+      },
+    "sdk/node/code"]
   },
   {
     "group": "Unity",

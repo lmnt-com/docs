@@ -1,0 +1,236 @@
+---
+title: 'Speech'
+description: 'Reference for the Speech class in the Node.js SDK'
+---
+
+<Note>
+Make sure that you have installed the SDK properly. [Installation](/sdk/node/introduction#installing)
+</Note>
+
+The `Speech` class is your primary touch-point with the LMNT API.
+
+Instantiate a `Speech` object with your <Tooltip tip='Create an API key by visiting your account page in our speech playground and signing up for a (free) plan.'>[LMNT API key](/api-reference/authentication):</Tooltip>
+
+```javascript
+from lmnt.api import Speech
+
+const speech = new Speech('LMNT_API_KEY')
+```
+
+--------
+
+## fetchVoices
+
+> `async fetchVoices(options={})`
+
+Returns the voices available for use in speech synthesis calls.
+
+```javascript
+const voices = await speech.fetchVoices()
+```
+
+### Parameters
+- `options` object (optional): An object containing these optional fields to update. Valid fields are
+  - `starred` boolean (optional): if `true`, only return starred voices; Defaults to `false`
+  - `owner` string (optional): Specify which voices to return. Choose from `lmnt`, `me`, or `all`. Defaults to `all`.
+
+### Return value
+A list of voice metadata objects. Here's a sample object:
+
+```javascript
+[
+  {
+    "name": "Curtis",
+    "id": "curtis",
+    "state": "ready",
+    "owner": "LMNT",
+    "starred": false,
+    "gender": "M",
+    "description": "Curtis' voice carries the seasoned timbre of middle age, filled with warmth, curiosity, and a hint of wisdom gained over the years."
+  }
+]
+```
+
+--------
+## fetchVoice
+> `async fetchVoice(voice)`
+
+Returns the voice metadata for a single voice.
+
+```javascript
+const voice = await speech.fetchVoice('curtis')
+```
+
+### Parameters
+- `voice` string: The id of the voice to update. Voice ids can be retrieved from `fetchVoices()`.
+
+### Return value
+The voice metadata object. Here's a sample object:
+
+```javascript
+  {
+    "name": "Curtis",
+    "id": "curtis",
+    "state": "ready",
+    "owner": "LMNT",
+    "starred": false,
+    "gender": "M",
+    "description": "Curtis' voice carries the seasoned timbre of middle age, filled with warmth, curiosity, and a hint of wisdom gained over the years."
+  }
+```
+
+--------
+
+## createVoice
+> `async createVoice(name, enhance, filenames, options={})`
+
+Creates a new voice from a set of audio files. Returns the voice metadata object.
+
+```javascript
+const filenames = ['file1.wav', 'file2.wav']
+const result = await speech.createVoice('new-voice', false, filenames)
+```
+
+### Parameters
+- `name` string: the name of the voice
+- `enhance` boolean: For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
+- `filenames` string[]: A list of filenames to use for the voice.
+- `options` object (optional): An object containing these optional fields to update. Valid fields are
+    - `type` string: The type of voice to create. Must be one of `instant` or `professional`. Defaults to `instant`.
+    - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
+    - `description` string: A description of the voice. Defaults to `None`.
+
+### Return value
+The id of the newly created voice and its associated voice metadata object. Here's a sample object:
+
+```javascript
+{
+    "id": "123444566422",
+    "voice": {
+        "owner": "me",
+        "name": "new-voice",
+        "id": "123444566422",
+        "state": "ready",
+        "starred": false,
+        "description": "Totam necessitatibus saepe repudiandae perferendis. Tempora iure provident. Consequatur debitis assumenda. Earum debitis cum.",
+        "type": "instant",
+        "gender": "male"
+    }
+}
+```
+
+--------
+## updateVoice
+> `async updateVoice(voice, options={})`
+
+Updates metadata for a specific voice. A voice that is not owned by you can only have its `starred` field updated. 
+Only provided fields will be changed.
+
+```javascript
+const options = {'name': 'new-voice-name', 'starred': true}
+await speech.updateVoice('123444566422', options)
+```
+
+### Parameters
+- `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+- `options` object (optional): An object containing these optional fields to update. Valid fields are
+    - `name` string: The name of the voice
+    - `starred` boolean: Whether the voice is starred by you
+    - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
+    - `description` string: A description of the voice.
+
+### Return value
+The updated voice metadata object.
+
+--------
+
+## deleteVoice
+> `async deleteVoice(voice)`
+
+Deletes a voice and cancels any pending operations on it. The voice must be owned by you. Cannot be undone.
+
+```javascript
+await speech.deleteVoice('123444566422')
+```
+
+### Parameters
+- `voice_id` string: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`.
+
+### Return value
+A success or error message. Here's a sample object:
+
+```javascript
+{
+    "success": "true"
+}
+```
+
+## synthesize
+
+> `async synthesize(text, voice, options={})`
+
+Synthesizes speech for a supplied text string.
+
+```javascript
+const synthesis = await speech.synthesize('Hello world!', 'curtis')
+const audio = synthesis.audio
+```
+
+### Parameters
+- `text` string: The text to synthesize
+- `voice` string: Which voice to render; id is found using the `list_voices` call
+- `options` object (optional): An object containing these optional fields to update. Valid fields are
+    - `format` string: `aac`, `mp3`, `wav`; Defaults to `mp3` (24kHz 16-bit mono)
+    - `length` number: Produce speech of this length in seconds; maximum 300.0 (5 minutes).
+    - `return_durations` boolean: Whether to include word durations detail in the response; Defaults to false
+    - `return_seed` boolean: Whether to include the seed used for synthesis in the response; Defaults to false
+    - `speed` number: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0
+    - `seed` number: The seed used to specify a different take; Defaults to a random value.
+
+### Return value
+An object with the following keys:
+- `audio`: The binary audio file.
+- `durations`: The word durations detail. Only returned if `return_durations` is `True`.
+- `seed`: The seed used for synthesis. Only returned if `return_seed` is `True`.
+
+Each `durations` entry is a dictionary describing the duration of each 'word' with the following keys:
+- `text`: The 'word' itself
+- `start`: The time at which the 'word' starts, in seconds
+- `duration`: The overall duration of the 'word', in seconds
+
+Here is the schema for the return value:
+
+```javascript
+{
+  "audio": binary-audio-file,
+  "durations": [
+    {
+      "text": "string",
+      "start": 0,
+      "duration": 0
+    }
+  ],
+  "seed": "string"
+}
+```
+
+### Notes
+- The `mp3` bitrate is 96kbps.
+
+--------
+
+## synthesizeStreaming
+> `synthesizeStreaming(voice, options={})`
+
+Creates a new, full-duplex streaming session. You can use the returned
+connection object to concurrently stream text content to the server and receive
+speech data from the server.
+
+### Parameters
+- `voice`: which voice to render; id is found using the `fetchVoices` call
+- `options` object (optional): An object containing these optional fields to update. Valid fields are 
+  - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0.
+  - `return_extras` boolean: Whether to return extra data (durations data and warnings) with each audio chunk.
+  
+### Return value
+A `StreamingSynthesisConnection` instance, which you can use to stream data.

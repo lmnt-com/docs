@@ -29,6 +29,15 @@ await conn.append_text('the emergency broadcast system.')
 await speech.append_text('This is a test of the eme')
 await speech.append_text('rgency broadcast system.')
 ```
+
+### Parameters
+- `text` string: Some or all of the text to synthesize
+
+### Note
+The text is guaranteed to be synthesized in the order that it is sent.
+
+You can access the synthesized data by using the async iterator on the connection object.
+
 -----------
 
 ## Async Iterator
@@ -37,20 +46,19 @@ await speech.append_text('rgency broadcast system.')
 
 > `async __anext__()`
 
-Iterates over audio data from the server. See the notes below for details on the audio format. Here's a short
+Iterates over data returned from the server. See the notes below for details on the object format. Here's a short
 snippet that shows how to iterate over the data:
 
 ```python
 conn = await speech.synthesize_streaming('mara-wilson')
 async for msg in conn:
-  msg.audio  # contains a binary string with the audio data
+  msg['audio']  # contains a binary string with the audio data
 ```
 
-### Parameters
-- `text` string: Some or all of the text to synthesize
-
-### Notes
-- audio is returned as a 96kbps mono MP3 stream with a sampling rate of 24kHz
+Each returned object contains the following properties:
+- `audio`: a binary string containing the audio data as 96kbps mono MP3 stream with a sampling rate of 24kHz.
+- `durations`: if `return_extras` was set to `true` in when the connection was created, this will be an array of the durations of each word in the text.
+- `warnings`: if `return_extras` was set to `true` in when the connection was created, this will include any warnings about the synthesis.
 
 -----------
 
