@@ -113,21 +113,18 @@ voice = await speech.create_voice('new-voice', True, ['file1.mp3', 'file2.mp3'])
     - `description` str: A description of the voice. Defaults to `None`.
 
 ### Return value
-The id of the newly created voice and its associated voice metadata object. Here's a sample object:
+The voice metadata object. Here's a sample object:
 
 ```javascript
 {
     "id": "123444566422",
-    "voice": {
-        "owner": "me",
-        "name": "new-voice",
-        "id": "123444566422",
-        "state": "ready",
-        "starred": false,
-        "description": "Totam necessitatibus saepe repudiandae perferendis. Tempora iure provident. Consequatur debitis assumenda. Earum debitis cum.",
-        "type": "instant",
-        "gender": "male"
-    }
+    "name": "new-voice",
+    "owner": "me",
+    "state": "ready",
+    "starred": false,
+    "description": "Totam necessitatibus saepe repudiandae perferendis. Tempora iure provident. Consequatur debitis assumenda. Earum debitis cum.",
+    "type": "instant",
+    "gender": "male"
 }
 ```
 

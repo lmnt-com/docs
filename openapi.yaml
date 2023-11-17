@@ -1,7 +1,7 @@
 components:
   schemas:
     voice:
-      description: FSAD
+      description: Voice details
       properties:
         description:
           description: A text description of this voice.
@@ -396,9 +396,27 @@ paths:
                   example: file:///Users/kaikato/Downloads/filename.wav
                   type: string
                 metadata:
-                  description: 'A JSON object containing the voice configuration
-                    noted above'
-                  example: '{"name": "Shanti", "type": "instant", "enhance": false
+                  description: 'Must be the first field in the multipart/form-data
+                    request.
+
+
+                    The metadata field is a JSON object containing the following fields:
+
+
+                    name (required): string; The display name for this voice
+
+                    enhance (required): bool; For unclean audio with background noise,
+                    applies processing to attempt to improve quality. Not on by default
+                    as it can also degrade quality in some circumstances.
+
+                    type (optional): string; The type of voice to create. Defaults
+                    to `instant`.
+
+                    gender (optional): string; A tag describing the gender of this
+                    voice. Has no effect on voice creation.
+
+                    description (optional): A text description of this voice.'
+                  example: '{"name": "new-voice", "type": "instant", "enhance": false
                     }'
                   type: string
               required:
@@ -413,30 +431,20 @@ paths:
                 '1':
                   summary: Success
                   value:
-                    id: '123444566422'
-                    voice:
-                      description: Totam necessitatibus saepe repudiandae perferendis.
-                        Tempora iure provident. Consequatur debitis assumenda. Earum
-                        debitis cum.
-                      gender: male
-                      id: '123444566422'
-                      name: curtis
-                      owner: lmnt
-                      starred: true
-                      state: ready
-                      type: instant
+                    description: Temporibus ipsum sunt facilis sed magni numquam quisquam
+                      provident distinctio. Omnis a recusandae eius ipsam ad ipsa.
+                      Omnis natus nisi culpa porro quasi. Saepe magnam nobis iste
+                      accusantium eaque labore excepturi. Ut neque soluta. Quia dolorem
+                      esse ex distinctio ea maiores nobis modi.
+                    gender: male
+                    id: '123456789'
+                    name: new-voice
+                    owner: me
+                    starred: false
+                    state: ready
+                    type: instant
               schema:
-                properties:
-                  id:
-                    description: The unique identifier of this voice.
-                    type: string
-                  voice:
-                    $ref: '#/components/schemas/voice'
-                required:
-                - id
-                - voice
-                title: ''
-                type: object
+                $ref: '#/components/schemas/voice'
           description: OK
         '400':
           content:
