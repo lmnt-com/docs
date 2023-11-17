@@ -20,7 +20,7 @@ components:
         owner:
           description: The owner of this voice.
           enum:
-          - LMNT
+          - system
           - me
           - other
           type: string
@@ -55,7 +55,7 @@ paths:
       description: Returns details about your account.
       parameters:
       - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
-        example: 5125c321ee36420ea9bef2341974e0f2b
+        example: {{X-API-Key}}
         in: header
         name: X-API-Key
         required: true
@@ -378,7 +378,7 @@ paths:
         and a batch of input audio data.
       parameters:
       - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
-        example: 5125c321ee36420ea9bef2341974e0f2b
+        example: {{X-API-Key}}
         in: header
         name: X-API-Key
         required: true
@@ -396,26 +396,7 @@ paths:
                   example: file:///Users/kaikato/Downloads/filename.wav
                   type: string
                 metadata:
-                  description: 'Must be the first field in the multipart/form-data
-                    request.
-
-
-                    The metadata field is a JSON object containing the following fields:
-
-
-                    name (required): string; The display name for this voice
-
-                    enhance (required): bool; For unclean audio with background noise,
-                    applies processing to attempt to improve quality. Not on by default
-                    as it can also degrade quality in some circumstances.
-
-                    type (optional): string; The type of voice to create. Defaults
-                    to `instant`.
-
-                    gender (optional): string; A tag describing the gender of this
-                    voice. Has no effect on voice creation.
-
-                    description (optional): A text description of this voice.'
+                  description: 'A JSON object containing the voice configuration described in the note above. '
                   example: '{"name": "new-voice", "type": "instant", "enhance": false
                     }'
                   type: string
@@ -489,7 +470,7 @@ paths:
         required: false
         schema:
           type: string
-      - description: Which owner's voices to return. Choose from `lmnt`, `me`, or
+      - description: Which owner's voices to return. Choose from `system`, `me`, or
           `all`. Defaults to `all`.
         example: lmnt,me
         in: query
@@ -498,7 +479,7 @@ paths:
         schema:
           type: string
       - description: Your API key. View your API key in your account page on the website.
-        example: 5125c321ee36420ea9bef2341974e0f2b
+        example: {{X-API-Key}}
         in: header
         name: X-API-Key
         required: true
@@ -571,7 +552,7 @@ paths:
         schema:
           type: string
       - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
-        example: 5125c321ee36420ea9bef2341974e0f2b
+        example: {{X-API-Key}}
         in: header
         name: X-API-Key
         required: true
@@ -627,7 +608,7 @@ paths:
         schema:
           type: string
       - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
-        example: 5125c321ee36420ea9bef2341974e0f2b
+        example: {{X-API-Key}}
         in: header
         name: X-API-Key
         required: true
@@ -699,7 +680,7 @@ paths:
         schema:
           type: string
       - description: Your API key. View your API key in your account page on https://app.lmnt.com/account.
-        example: 5125c321ee36420ea9bef2341974e0f2b
+        example: {{X-API-Key}}
         in: header
         name: X-API-Key
         required: true

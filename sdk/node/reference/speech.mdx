@@ -32,7 +32,7 @@ const voices = await speech.fetchVoices()
 ### Parameters
 - `options` object (optional): An object containing these optional fields to update. Valid fields are
   - `starred` boolean (optional): if `true`, only return starred voices; Defaults to `false`
-  - `owner` string (optional): Specify which voices to return. Choose from `lmnt`, `me`, or `all`. Defaults to `all`.
+  - `owner` string (optional): Specify which voices to return. Choose from `system`, `me`, or `all`. Defaults to `all`.
 
 ### Return value
 A list of voice metadata objects. Here's a sample object:
@@ -43,9 +43,9 @@ A list of voice metadata objects. Here's a sample object:
     "name": "Curtis",
     "id": "curtis",
     "state": "ready",
-    "owner": "LMNT",
+    "owner": "system",
     "starred": false,
-    "gender": "M",
+    "gender": "male",
     "description": "Curtis' voice carries the seasoned timbre of middle age, filled with warmth, curiosity, and a hint of wisdom gained over the years."
   }
 ]
@@ -72,9 +72,9 @@ The voice metadata object. Here's a sample object:
     "name": "Curtis",
     "id": "curtis",
     "state": "ready",
-    "owner": "LMNT",
+    "owner": "system",
     "starred": false,
-    "gender": "M",
+    "gender": "male",
     "description": "Curtis' voice carries the seasoned timbre of middle age, filled with warmth, curiosity, and a hint of wisdom gained over the years."
   }
 ```
