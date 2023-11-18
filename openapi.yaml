@@ -472,7 +472,7 @@ paths:
           type: string
       - description: Which owner's voices to return. Choose from `system`, `me`, or
           `all`. Defaults to `all`.
-        example: lmnt,me
+        example: system,me
         in: query
         name: owner
         required: false
@@ -499,7 +499,7 @@ paths:
                     gender: male
                     id: s2342394274924234
                     name: curtis
-                    owner: lmnt
+                    owner: system
                     starred: true
                     type: instant
               schema:
@@ -630,7 +630,7 @@ paths:
                     gender: male
                     id: '12342342353'
                     name: curtis
-                    owner: lmnt
+                    owner: system
                     starred: true
                     type: instant
               schema:

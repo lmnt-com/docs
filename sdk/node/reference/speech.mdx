@@ -30,8 +30,8 @@ const voices = await speech.fetchVoices()
 ```
 
 ### Parameters
-- `options` object (optional): An object containing these optional fields to update. Valid fields are
-  - `starred` boolean (optional): if `true`, only return starred voices; Defaults to `false`
+- `options` object (optional): An object containing optional fields to update. Valid fields are:
+  - `starred` boolean (optional): If `true`, only return starred voices; Defaults to `false`
   - `owner` string (optional): Specify which voices to return. Choose from `system`, `me`, or `all`. Defaults to `all`.
 
 ### Return value
@@ -95,7 +95,7 @@ const result = await speech.createVoice('new-voice', false, filenames)
 - `name` string: the name of the voice
 - `enhance` boolean: For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
 - `filenames` string[]: A list of filenames to use for the voice.
-- `options` object (optional): An object containing these optional fields to update. Valid fields are
+- `options` object (optional): An object containing optional fields to update. Valid fields are:
     - `type` string: The type of voice to create. Must be one of `instant` or `professional`. Defaults to `instant`.
     - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
     - `description` string: A description of the voice. Defaults to `None`.
@@ -130,7 +130,7 @@ await speech.updateVoice('123444566422', options)
 
 ### Parameters
 - `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
-- `options` object (optional): An object containing these optional fields to update. Valid fields are
+- `options` object (optional): An object containing optional fields to update. Valid fields are:
     - `name` string: The name of the voice
     - `starred` boolean: Whether the voice is starred by you
     - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
@@ -176,7 +176,7 @@ const audio = synthesis.audio
 ### Parameters
 - `text` string: The text to synthesize
 - `voice` string: Which voice to render; id is found using the `list_voices` call
-- `options` object (optional): An object containing these optional fields to update. Valid fields are
+- `options` object (optional): An object containing optional fields to update. Valid fields are:
     - `format` string: `aac`, `mp3`, `wav`; Defaults to `mp3` (24kHz 16-bit mono)
     - `length` number: Produce speech of this length in seconds; maximum 300.0 (5 minutes).
     - `return_durations` boolean: Whether to include word durations detail in the response; Defaults to false
@@ -225,7 +225,7 @@ speech data from the server.
 
 ### Parameters
 - `voice`: which voice to render; id is found using the `fetchVoices` call
-- `options` object (optional): An object containing these optional fields to update. Valid fields are 
+- `options` object (optional): An object containing optional fields to update. Valid fields are:
   - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0.
   - `return_extras` boolean: Whether to return extra data (durations data and warnings) with each audio chunk.
   

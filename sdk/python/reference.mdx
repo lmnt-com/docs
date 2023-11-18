@@ -32,7 +32,7 @@ async with Speech('LMNT_API_KEY') as speech:
 ```
 ### list_voices
 
-> `async list_voices(**kwargs)`
+> `async list_voices(starred=False, owner='all')`
 
 Returns the voices available for use in speech synthesis calls.
 
@@ -90,7 +90,7 @@ The voice metadata object (A dictionary containing details of the voice). Here's
 ```
 
 ### create_voice
-> `async create_voice(name, enhance, filenames, **kwargs)`
+> `async create_voice(name, enhance, filenames, type='instant', gender=None, description=None)`
 
 Creates a new voice from a set of audio files. Returns the voice metadata object.
 

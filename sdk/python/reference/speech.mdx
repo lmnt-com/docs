@@ -33,7 +33,7 @@ async with Speech('LMNT_API_KEY') as speech:
 
 ## list_voices
 
-> `async list_voices(**kwargs)`
+> `async list_voices(starred=False, owner='all')`
 
 Returns the voices available for use in speech synthesis calls.
 
@@ -95,7 +95,7 @@ The voice metadata object (A dictionary containing details of the voice). Here's
 -----------
 
 ## create_voice
-> `async create_voice(name, enhance, filenames, **kwargs)`
+> `async create_voice(name, enhance, filenames, type='instant', gender=None, description=None)`
 
 Creates a new voice from a set of audio files. Returns the voice metadata object.
 
@@ -194,6 +194,10 @@ await speech.close()
 
 Synthesizes speech for a supplied text string.
 
+```python
+synth = await speech.synthesize('Hello world!', 'voice_id')
+```
+
 ### Parameters
 - `text` str: The text to synthesize
 - `voice` str: Which voice to render; id is found using the `list_voices` call
@@ -239,10 +243,14 @@ Here is the schema for the return value:
 -----------
 
 ## synthesize_streaming
-> `async synthesize_streaming(voice, **kwargs)`
+> `async synthesize_streaming(voice, return_extras=False, **kwargs)`
 
 Creates a new, full-duplex streaming session. You can use the returned session object to concurrently stream text content to the server
 and receive speech data from the server.
+
+```python
+connection = await speech.synthesize_streaming('voice_id')
+```
 
 ### Parameters
 - `voice` string: which voice to render; id is found using the `list_voices` call
