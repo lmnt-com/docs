@@ -15,13 +15,18 @@
    "to": "#4984e3"
  }
 },
+"analytics": {
+  "mixpanel": {
+      "projectToken": "c0ed5d5a6ba47b2580c789e9f4185b1f"
+  }
+},
 "modeToggle": {
   "default": "light"
 },
 "topbarLinks": [
  {
    "name": "Support",
-   "url": "mailto:hello@lmnt.com"
+   "url": "mailto:support@lmnt.com"
  }
 ],
 "topbarCtaButton": {
