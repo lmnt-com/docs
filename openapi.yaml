@@ -396,7 +396,7 @@ paths:
                   example: file://Users/user/filename.wav
                   type: string
                 metadata:
-                  description: 'A JSON object containing the voice configuration described in the note above. Make sure to set the Content-Type header to application/json.'
+                  description: 'A JSON object containing the voice configuration described in the note above. Make sure to set type to application/json.'
                   example: '{"name": "new-voice", "type": "instant", "enhance": false}; type=application/json'
                   type: string
               required:
