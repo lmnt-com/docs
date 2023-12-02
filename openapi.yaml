@@ -393,12 +393,11 @@ paths:
                   description: 'One or more input audio files to train the voice in
                     the form of binary .wav or .mp3 file attachments. Max attached
                     files: 20. Max total file size: 250 MB. '
-                  example: file:///Users/kaikato/Downloads/filename.wav
+                  example: file://Users/user/filename.wav
                   type: string
                 metadata:
-                  description: 'A JSON object containing the voice configuration described in the note above. '
-                  example: '{"name": "new-voice", "type": "instant", "enhance": false
-                    }'
+                  description: 'A JSON object containing the voice configuration described in the note above. Make sure to set the Content-Type header to application/json.'
+                  example: '{"name": "new-voice", "type": "instant", "enhance": false}; type=application/json'
                   type: string
               required:
               - metadata
