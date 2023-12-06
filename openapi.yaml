@@ -389,15 +389,15 @@ paths:
           multipart/form-data:
             schema:
               properties:
+                metadata:
+                  description: 'A JSON object containing the voice configuration described in the note above. Make sure to set type to application/json. This field must come first.'
+                  example: '{"name": "new-voice", "type": "instant", "enhance": false}; type=application/json'
+                  type: string
                 files:
                   description: 'One or more input audio files to train the voice in
                     the form of binary .wav or .mp3 file attachments. Max attached
                     files: 20. Max total file size: 250 MB. '
-                  example: file://Users/user/filename.wav
-                  type: string
-                metadata:
-                  description: 'A JSON object containing the voice configuration described in the note above. Make sure to set type to application/json.'
-                  example: '{"name": "new-voice", "type": "instant", "enhance": false}; type=application/json'
+                  example: '@/Users/user/filename.wav'
                   type: string
               required:
               - metadata
