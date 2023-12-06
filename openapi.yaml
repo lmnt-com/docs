@@ -398,7 +398,7 @@ paths:
                     the form of binary .wav or .mp3 file attachments. Max attached
                     files: 20. Max total file size: 250 MB. '
                   example: '@/Users/user/filename.wav'
-                  type: file
+                  type: string
               required:
               - metadata
               - files

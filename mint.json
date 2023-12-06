@@ -131,5 +131,10 @@
  "twitter": "https://twitter.com/lmnt_com",
  "github": "https://github.com/lmnt-com",
  "linkedin": "https://www.linkedin.com/company/lmnt"
-}
+},
+"api":{
+  "maintainOrder": true,
+  "baseUrl": "https://api.lmnt.com"
+},
+"openapi": ["./openapi.yaml"]
 }
