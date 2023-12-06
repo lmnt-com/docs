@@ -390,7 +390,7 @@ paths:
             schema:
               properties:
                 metadata:
-                  description: 'A JSON object containing the voice configuration described in the note above. Make sure to set type to application/json. This field must come first.'
+                  description: 'A stringified JSON object containing the voice configuration described in the note above. Make sure to set content type of this part to application/json. This field must come first.'
                   example: '{"name": "new-voice", "type": "instant", "enhance": false}; type=application/json'
                   type: string
                 files:

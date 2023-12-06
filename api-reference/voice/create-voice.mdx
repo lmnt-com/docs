@@ -24,4 +24,31 @@ curl --request POST \
   --form 'metadata={"name": "new-voice", "type": "instant", "enhance": false}; type=application/json' \
   --form files=@/Users/user/filename.wav
 ```
+
+```javascript JavaScript
+const metadata = JSON.stringify({
+    name: 'new-voice',
+    enhance: false,
+    type: 'instant',
+  });
+  const form = new FormData();
+  form.append('metadata', metadata, {
+      contentType: 'application/json',
+  });
+  form.append("file_field", fs.createReadStream('sample-audio.mp3'));
+  const headers = {
+      ...form.getHeaders(),
+      ...{'X-API-Key': '<x-api-key>'}
+    } 
+  const options = {
+    method: 'POST',
+    headers: headers,
+    body: form,
+  };
+
+  fetch('https://api.lmnt.com/v1/ai/voice', options)
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(err => console.error(err));
+```
 </RequestExample>
