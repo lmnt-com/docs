@@ -14,7 +14,7 @@ The metadata field is a stringified JSON object containing the following fields:
 - `description` (optional): A text description of this voice.
 </Note>
 
-{/* <RequestExample>
+<RequestExample>
 
 ```bash cURL
 curl --request POST \
@@ -24,29 +24,4 @@ curl --request POST \
   --form 'metadata={"name": "new-voice", "type": "instant", "enhance": false}; type=application/json' \
   --form files=@/Users/user/filename.wav
 ```
-
-```javascript JavaScript
-const metadata = JSON.stringify({
-  name: 'new-voice100',
-  type: 'instant',
-  enhance: false
-});
-const form = new FormData();
-form.append('metadata', metadata, {
-    contentType: 'application/json',
-});
-form.append("files", fs.createReadStream('sample-audio.mp3'));
-
-const options = {
-  method: 'POST',
-  headers: {'X-API-Key': '39690d789cb24274853abea1770fa1b4', 'Content-Type': 'multipart/form-data'}
-};
-
-options.body = form;
-
-fetch('https://api.lmnt.com/v1/ai/voice', options)
-  .then(response => response.json())
-  .then(response => console.log(response))
-  .catch(err => console.error(err));
-```
-</RequestExample> */}
+</RequestExample>
