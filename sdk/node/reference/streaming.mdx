@@ -64,6 +64,10 @@ Each returned object contains the following properties:
 - `audio`: a binary string containing the audio data as 96kbps mono MP3 stream with a sampling rate of 24kHz.
 - `durations`: if `return_extras` was set to `true` in when the connection was created, this will be an array of the durations of each word in the text.
 - `warnings`: if `return_extras` was set to `true` in when the connection was created, this will include any warnings about the synthesis.
+
+<Note>
+The durations array resets its start time for each chunk of audio returned and there is a 0.45 second gap between each chunk of audio. 
+</Note>
 -----------------
 ## close
 
