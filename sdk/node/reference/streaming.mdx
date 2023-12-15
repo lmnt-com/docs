@@ -15,7 +15,7 @@ To create an instance of this class, use the [`synthesize_streaming`](speech#syn
 
 ```javascript
 const speech = new Speech('LMNT_API_KEY')
-const conn = await speech.synthesizeStreaming('mara-wilson')
+const connection = await speech.synthesizeStreaming('mara-wilson')
 ```
 -----------------
 ## appendText
@@ -26,13 +26,13 @@ Sends additional text to synthesize to the server. The text can be split at any
 point. For example, the two snippets below are semantically equivalent:
 
 ```js
-await conn.appendText('This is a test of ')
-await conn.appendText('the emergency broadcast system.')
+await connection.appendText('This is a test of ')
+await connection.appendText('the emergency broadcast system.')
 ```
 
 ```js
-await speech.appendText('This is a test of the eme')
-await speech.appendText('rgency broadcast system.')
+await connection.appendText('This is a test of the eme')
+await connection.appendText('rgency broadcast system.')
 ```
 
 ### Parameters
@@ -52,7 +52,7 @@ the data:
 
 ```js
 for await (const message of connection) {
-  // `message` is an object as described above
+  // `message` is an object as described below
   const audio = message.audio;
   const audioBytes = Buffer.byteLength(audio);
   process.stdout.write(`Received ${audioBytes} bytes.`);

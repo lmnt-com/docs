@@ -10,7 +10,7 @@ To create an instance of this class, use the [`synthesize_streaming`](speech#syn
 
 ```python
 speech = Speech('LMNT_API_KEY')
-conn = await speech.synthesize_streaming('mara-wilson')
+connection = await speech.synthesize_streaming('mara-wilson')
 ```
 
 ## append_text
@@ -21,13 +21,13 @@ Sends additional text to synthesize to the server. The text can be split at any 
 below are semantically equivalent:
 
 ```python
-await conn.append_text('This is a test of ')
-await conn.append_text('the emergency broadcast system.')
+await connection.append_text('This is a test of ')
+await connection.append_text('the emergency broadcast system.')
 ```
 
 ```python
-await speech.append_text('This is a test of the eme')
-await speech.append_text('rgency broadcast system.')
+await connection.append_text('This is a test of the eme')
+await connection.append_text('rgency broadcast system.')
 ```
 
 ### Parameters
