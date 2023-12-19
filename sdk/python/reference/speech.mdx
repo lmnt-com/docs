@@ -42,8 +42,14 @@ voices = await speech.list_voices()
 ```
 
 ### Parameters
-- `starred` bool (optional): if `true`, only return starred voices; Defaults to `false`
-- `owner` str (optional): Specify which voices to return. Choose from `system`, `me`, or `all`. Defaults to `all`.
+<ResponseField name='starred' type='bool' default='false'>
+  if `true`, only return starred voices.
+</ResponseField>
+<ResponseField name='owner' type='str' default='all'>
+  Specify which voices to return. Choose from `system`, `me`, or `all`.
+</ResponseField>
+{/* - `starred` bool (optional): if `true`, only return starred voices; Defaults to `false`
+- `owner` str (optional): Specify which voices to return. Choose from `system`, `me`, or `all`. Defaults to `all`. */}
 
 ### Return value
 A list of voice metadata objects. Here's a sample object:
@@ -75,7 +81,10 @@ voice = await speech.voice_info('voice_id')
 ```
 
 ### Parameters
-- `voice_id` str: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+<ResponseField name='voice_id' type='str' required>
+  The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+</ResponseField>
+{/* - `voice_id` str: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`. */}
 
 ### Return value
 The voice metadata object (A dictionary containing details of the voice). Here's a sample object:
@@ -104,13 +113,31 @@ voice = await speech.create_voice('new-voice', True, ['file1.mp3', 'file2.mp3'])
 ```
 
 ### Parameters
-- `name` str: the name of the voice
+<ResponseField name='name' type='str' required>
+  The name of the voice.
+</ResponseField>
+<ResponseField name='enhance' type='bool' required>
+  For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
+</ResponseField>
+<ResponseField name='filenames' type='[str]' required>
+  A list of filenames to use for the voice.
+</ResponseField>
+<ResponseField name='type' type='str' default='instant'>
+  The type of voice to create. Must be one of `instant` or `professional`.
+</ResponseField>
+<ResponseField name='gender' type='str' default='None'>
+  The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
+</ResponseField>
+<ResponseField name='description' type='str' default='None'>
+  A description of the voice.
+</ResponseField>
+{/* - `name` str: the name of the voice
 - `enhance` bool: For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
 - `filenames` [str]: A list of filenames to use for the voice.
 - Optional Parameters
     - `type` str: The type of voice to create. Must be one of `instant` or `professional`. Defaults to `instant`.
     - `gender` str: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
-    - `description` str: A description of the voice. Defaults to `None`.
+    - `description` str: A description of the voice. Defaults to `None`. */}
 
 ### Return value
 The voice metadata object. Here's a sample object:
@@ -141,12 +168,27 @@ updated_voice = await speech.update_voice('voice_id', name='new-voice', starred=
 ```
 
 ### Parameters
-- `voice_id` str: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+<ResponseField name='voice_id' type='str' required>
+  The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+</ResponseField>
+<ResponseField name='name' type='str'>
+  The name of the voice.
+</ResponseField>
+<ResponseField name='starred' type='bool'>
+  Whether the voice is starred by you.
+</ResponseField>
+<ResponseField name='gender' type='str'>
+  The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
+</ResponseField>
+<ResponseField name='description' type='str'>
+  A description of the voice.
+</ResponseField>
+{/* - `voice_id` str: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
 - Optional Parameters:
     - `name` str: The name of the voice
     - `starred` bool: Whether the voice is starred by you
     - `gender` str: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
-    - `description` str: A description of the voice.
+    - `description` str: A description of the voice. */}
 
 ### Return value
 The updated voice metadata object.
@@ -163,7 +205,10 @@ await speech.delete_voice('voice_id')
 ```
 
 ### Parameters
-- `voice_id` str: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`.
+<ResponseField name='voice_id' type='str' required>
+  The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+</ResponseField>
+{/* - `voice_id` str: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`. */}
 
 ### Return value
 A success or error message. Here's a sample object:
@@ -199,7 +244,31 @@ synth = await speech.synthesize('Hello world!', 'voice_id')
 ```
 
 ### Parameters
-- `text` str: The text to synthesize
+<ResponseField name='text' type='str' required>
+  The text to synthesize.
+</ResponseField>
+<ResponseField name='voice' type='str' required>
+  Which voice to render; id is found using the `list_voices` call.
+</ResponseField>
+<ResponseField name='format' type='str' default='mp3'>
+  `aac`, `mp3`, `wav`; Defaults to `mp3` (24kHz 16-bit mono)
+</ResponseField>
+<ResponseField name='length' type='float'>
+  Produce speech of this length in seconds; maximum 300.0 (5 minutes).
+</ResponseField>
+<ResponseField name='return_durations' type='bool' default='false'>
+  Whether to include word durations detail in the response.
+</ResponseField>
+<ResponseField name='return_seed' type='bool' default='false'>
+  Whether to include the seed used for synthesis in the response.
+</ResponseField>
+<ResponseField name='speed' type='float' default='1.0'>
+  Floating point value between 0.25 (slow) and 2.0 (fast).
+</ResponseField>
+<ResponseField name='seed' type='int'>
+  The seed used to specify a different take; Defaults to a random value.
+</ResponseField>
+{/* - `text` str: The text to synthesize
 - `voice` str: Which voice to render; id is found using the `list_voices` call
 - `**kwargs`
     - `format` str: `aac`, `mp3`, `wav`; Defaults to `mp3` (24kHz 16-bit mono)
@@ -207,10 +276,31 @@ synth = await speech.synthesize('Hello world!', 'voice_id')
     - `return_durations` bool: Whether to include word durations detail in the response; Defaults to false
     - `return_seed` bool: Whether to include the seed used for synthesis in the response; Defaults to false
     - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0
-    - `seed` int: The seed used to specify a different take; Defaults to a random value.
+    - `seed` int: The seed used to specify a different take; Defaults to a random value. */}
 
 ### Return value
-An object with the following keys:
+<ResponseField name='audio' type='bytes'>
+  The synthesized audio encoded in the requested format as a bytes object.
+</ResponseField>
+<ResponseField name="durations" type="list of duration objects">
+  A list of text duration objects. Only returned if `return_durations` is `True`.
+  <Expandable title="properties">
+    Each object describes the duration of a chunk of text (e.g., words, punctuation, and spaces) with the following keys:
+    <ResponseField name="text" type="str">
+      The text itself.
+    </ResponseField>
+    <ResponseField name="start" type="int">
+      The time at which the text starts, in seconds
+    </ResponseField>
+    <ResponseField name="duration" type="int">
+      The overall duration of the text, in seconds
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<ResponseField name='seed' type='int'>
+  The seed used for synthesis. Only returned if `return_seed` is `True`.
+</ResponseField>
+{/* An object with the following keys:
 - `audio`: The binary audio file.
 - `durations`: The word durations detail. Only returned if `return_durations` is `True`.
 - `seed`: The seed used for synthesis. Only returned if `return_seed` is `True`.
@@ -218,7 +308,7 @@ An object with the following keys:
 Each `durations` entry is a dictionary describing the duration of each 'word' with the following keys:
 - `text`: The 'word' itself
 - `start`: The time at which the 'word' starts, in seconds
-- `duration`: The overall duration of the 'word', in seconds
+- `duration`: The overall duration of the 'word', in seconds */}
 
 Here is the schema for the return value:
 
@@ -231,8 +321,9 @@ Here is the schema for the return value:
       "start": 0,
       "duration": 0
     }
+    ...
   ],
-  "seed": "string"
+  "seed": "int"
 }
 ```
 
@@ -253,10 +344,19 @@ connection = await speech.synthesize_streaming('voice_id')
 ```
 
 ### Parameters
-- `voice` string: which voice to render; id is found using the `list_voices` call
+<ResponseField name='voice' type='str' required>
+  Which voice to render; id can be found using the `list_voices` call.
+</ResponseField>
+<ResponseField name='speed' type='float' default='1.0'>
+  The speed of the speech. Floating point value between 0.25 (slow) and 2.0 (fast).
+</ResponseField>
+<ResponseField name='return_extras' type='bool' default='false'>
+  Whether to return extra data (durations data and warnings) with each audio chunk.
+</ResponseField>
+{/* - `voice` string: which voice to render; id is found using the `list_voices` call
 - Optional Parameters
     - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0.
-    - `return_extras` bool: Whether to return extra data (durations data and warnings) with each audio chunk.
+    - `return_extras` bool: Whether to return extra data (durations data and warnings) with each audio chunk. */}
 
 ### Return value
 A `StreamingSynthesisConnection` instance, which you can use to stream data.

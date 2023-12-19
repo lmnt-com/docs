@@ -30,9 +30,20 @@ const voices = await speech.fetchVoices()
 ```
 
 ### Parameters
-- `options` object (optional): An object containing optional fields to update. Valid fields are:
-  - `starred` boolean (optional): If `true`, only return starred voices; Defaults to `false`
-  - `owner` string (optional): Specify which voices to return. Choose from `system`, `me`, or `all`. Defaults to `all`.
+<ResponseField name="options" type="object">
+  An optional object containing fields to update. 
+  <Expandable title="properties">
+    <ResponseField name="starred" type="boolean">
+      If `true`, only return starred voices; Defaults to `false`
+    </ResponseField>
+    <ResponseField name="owner" type="string">
+      Specify which voices to return. Choose from `system`, `me`, or `all`. Defaults to `all`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+{/* - `options` object (optional): An object containing optional fields to update. Valid fields are:
+    - `starred` boolean (optional): If `true`, only return starred voices; Defaults to `false`
+    - `owner` string (optional): Specify which voices to return. Choose from `system`, `me`, or `all`. Defaults to `all`. */}
 
 ### Return value
 A list of voice metadata objects. Here's a sample object:
@@ -62,7 +73,10 @@ const voice = await speech.fetchVoice('curtis')
 ```
 
 ### Parameters
-- `voice` string: The id of the voice to update. Voice ids can be retrieved from `fetchVoices()`.
+<ResponseField name="voice" type="string" required>
+  The id of the voice to update. Voice ids can be retrieved from `fetchVoices()`.
+</ResponseField>
+{/* - `voice` string: The id of the voice to update. Voice ids can be retrieved from `fetchVoices()`. */}
 
 ### Return value
 The voice metadata object. Here's a sample object:
@@ -92,13 +106,35 @@ const result = await speech.createVoice('new-voice', false, filenames)
 ```
 
 ### Parameters
-- `name` string: the name of the voice
+<ResponseField name="name" type="string" required>
+  The name of the voice.
+</ResponseField>
+<ResponseField name="enhance" type="boolean" required>
+  For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
+</ResponseField>
+<ResponseField name="filenames" type="string[]" required>
+  A list of filenames to use for the voice.
+</ResponseField>
+<ResponseField name="options" type="object">
+  <Expandable title="properties">
+    <ResponseField name="type" type="string">
+      The type of voice to create. Must be one of `instant` or `professional`. Defaults to `instant`.
+    </ResponseField>
+    <ResponseField name="gender" type="string">
+      The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      A description of the voice. Defaults to `None`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+{/* - `name` string: the name of the voice
 - `enhance` boolean: For unclean audio with background noise, applies processing to attempt to improve quality. Not on by default as it can also degrade quality in some circumstances.
 - `filenames` string[]: A list of filenames to use for the voice.
 - `options` object (optional): An object containing optional fields to update. Valid fields are:
     - `type` string: The type of voice to create. Must be one of `instant` or `professional`. Defaults to `instant`.
     - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes. Defaults to `None`.
-    - `description` string: A description of the voice. Defaults to `None`.
+    - `description` string: A description of the voice. Defaults to `None`. */}
 
 ### Return value
 The voice metadata object. Here's a sample object:
@@ -129,12 +165,32 @@ await speech.updateVoice('123444566422', options)
 ```
 
 ### Parameters
-- `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+<ResponseField name="voice_id" type="string" required>
+  The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
+</ResponseField>
+<ResponseField name="options" type="object">
+  The properties to update. Only provided fields will be changed.
+  <Expandable title="properties">
+    <ResponseField name="name" type="string">
+      The name of the voice.
+    </ResponseField>
+    <ResponseField name="starred" type="boolean">
+      Whether the voice is starred by you
+    </ResponseField>
+    <ResponseField name="gender" type="string">
+      The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      A description of the voice.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+{/* - `voice_id` string: The id of the voice to update. If you don't know the id, you can get it from `list_voices()`.
 - `options` object (optional): An object containing optional fields to update. Valid fields are:
     - `name` string: The name of the voice
     - `starred` boolean: Whether the voice is starred by you
     - `gender` string: The gender of the voice, e.g. `male`, `female`, `nonbinary`. For categorization purposes.
-    - `description` string: A description of the voice.
+    - `description` string: A description of the voice. */}
 
 ### Return value
 The updated voice metadata object.
@@ -151,7 +207,10 @@ await speech.deleteVoice('123444566422')
 ```
 
 ### Parameters
-- `voice_id` string: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`.
+<ResponseField name="voice_id" type="string" required>
+  The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`.
+</ResponseField>
+{/* - `voice_id` string: The id of the voice to delete. If you don't know the id, you can get it from `list_voices()`. */}
 
 ### Return value
 A success or error message. Here's a sample object:
@@ -174,6 +233,37 @@ const audio = synthesis.audio
 ```
 
 ### Parameters
+<ResponseField name='text' type='string' required>
+  The text to synthesize.
+</ResponseField>
+<ResponseField name='voice' type='string' required>
+  Which voice to render; id is found using the `list_voices` call.
+</ResponseField>
+<ResponseField name="options" type="object">
+  Addiitonal options for the synthesis request.
+  <Expandable title="properties">
+    <ResponseField name='format' type='str' default='mp3'>
+      `aac`, `mp3`, `wav`; Defaults to `mp3` (24kHz 16-bit mono)
+    </ResponseField>
+    <ResponseField name='length' type='number'>
+      Produce speech of this length in seconds; maximum 300.0 (5 minutes).
+    </ResponseField>
+    <ResponseField name='return_durations' type='boolean' default='false'>
+      Whether to include word durations detail in the response.
+    </ResponseField>
+    <ResponseField name='return_seed' type='boolean' default='false'>
+      Whether to include the seed used for synthesis in the response.
+    </ResponseField>
+    <ResponseField name='speed' type='number' default='1.0'>
+      Floating point value between 0.25 (slow) and 2.0 (fast).
+    </ResponseField>
+    <ResponseField name='seed' type='number'>
+      The seed used to specify a different take; Defaults to a random value.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+{/* 
 - `text` string: The text to synthesize
 - `voice` string: Which voice to render; id is found using the `list_voices` call
 - `options` object (optional): An object containing optional fields to update. Valid fields are:
@@ -182,18 +272,43 @@ const audio = synthesis.audio
     - `return_durations` boolean: Whether to include word durations detail in the response; Defaults to false
     - `return_seed` boolean: Whether to include the seed used for synthesis in the response; Defaults to false
     - `speed` number: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0
-    - `seed` number: The seed used to specify a different take; Defaults to a random value.
+    - `seed` number: The seed used to specify a different take; Defaults to a random value. 
+*/}
 
 ### Return value
+<ResponseField name='audio' type='Buffer'>
+  The synthesized audio encoded in the requested format as a Buffer object.
+</ResponseField>
+<ResponseField name="durations" type="array of duration objects">
+  An array of text duration objects. Only returned if `return_durations` is `True`.
+  <Expandable title="properties">
+    Each object describes the duration of a chunk of text (e.g., words, punctuation, and spaces) with the following keys:
+    <ResponseField name="text" type="string">
+      The text itself.
+    </ResponseField>
+    <ResponseField name="start" type="number">
+      The time at which the text starts, in seconds
+    </ResponseField>
+    <ResponseField name="duration" type="number">
+      The overall duration of the text, in seconds
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<ResponseField name='seed' type='number'>
+  The seed used for synthesis. Only returned if `return_seed` is `True`.
+</ResponseField>
+
+{/*
 An object with the following keys:
 - `audio`: The binary audio file.
-- `durations`: The word durations detail. Only returned if `return_durations` is `True`.
+- `durations`: A list of word duration objects. Only returned if `return_durations` is `True`.
 - `seed`: The seed used for synthesis. Only returned if `return_seed` is `True`.
 
 Each `durations` entry is a dictionary describing the duration of each 'word' with the following keys:
 - `text`: The 'word' itself
 - `start`: The time at which the 'word' starts, in seconds
 - `duration`: The overall duration of the 'word', in seconds
+*/}
 
 Here is the schema for the return value:
 
@@ -205,9 +320,10 @@ Here is the schema for the return value:
       "text": "string",
       "start": 0,
       "duration": 0
-    }
+    },
+    ...
   ],
-  "seed": "string"
+  "seed": "number"
 }
 ```
 
@@ -224,10 +340,27 @@ connection object to concurrently stream text content to the server and receive
 speech data from the server.
 
 ### Parameters
+<ResponseField name='voice' type='string' required>
+  Which voice to render; id can be found using the `fetchVoices` call.
+</ResponseField>
+<ResponseField name="options" type="object">
+  Addiitonal options for the streaming connection.
+  <Expandable title="properties">
+    <ResponseField name='speed' type='number' default='1.0'>
+      The speed of the speech. Floating point value between 0.25 (slow) and 2.0 (fast).
+    </ResponseField>
+    <ResponseField name='return_extras' type='boolean' default='false'>
+      Whether to return extra data (durations data and warnings) with each audio chunk.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+  
+{/*
 - `voice`: which voice to render; id is found using the `fetchVoices` call
 - `options` object (optional): An object containing optional fields to update. Valid fields are:
   - `speed` float: Floating point value between 0.25 (slow) and 2.0 (fast); Defaults to 1.0.
   - `return_extras` boolean: Whether to return extra data (durations data and warnings) with each audio chunk.
+*/}
   
 ### Return value
 A `StreamingSynthesisConnection` instance, which you can use to stream data.

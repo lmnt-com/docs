@@ -31,7 +31,10 @@ await connection.append_text('rgency broadcast system.')
 ```
 
 ### Parameters
-- `text` string: Some or all of the text to synthesize
+<ResponseField name='text' type='str' required>
+  Some or all of the text to synthesize.
+</ResponseField>
+{/* - `text` string: Some or all of the text to synthesize */}
 
 ### Note
 The text is guaranteed to be synthesized in the order that it is sent.
@@ -55,14 +58,38 @@ async for msg in conn:
   msg['audio']  # contains a binary string with the audio data
 ```
 
-Each returned object contains the following properties:
+Each returned object contains the following keys:
+<ResponseField name='audio' type='bytes'>
+  A bytes object containing the audio data as 96kbps mono MP3 stream with a sampling rate of 24kHz.
+</ResponseField>
+<ResponseField name="durations" type="list of duration objects">
+  An array of text duration objects. Only returned if `return_extras` was set to `true` in when the connection was created.
+  <Expandable title="properties">
+    Each object describes the duration of a chunk of text (e.g., words, punctuation, and spaces) with the following keys:
+    <ResponseField name="text" type="string">
+      The text itself.
+    </ResponseField>
+    <ResponseField name="start" type="number">
+      The time at which the text starts, in seconds
+    </ResponseField>
+    <ResponseField name="duration" type="number">
+      The overall duration of the text, in seconds
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<Note>
+The durations array resets its start time for each chunk of audio returned and there is a 0.45 second silence appended to the end of each chunk of audio that is 
+not captured in the durations array. 
+</Note>
+<ResponseField name='warnings' type='string'>
+  If `return_extras` was set to `true` in when the connection was created, this will include any warnings about the synthesis.
+</ResponseField>
+
+{/*
 - `audio`: a binary string containing the audio data as 96kbps mono MP3 stream with a sampling rate of 24kHz.
 - `durations`: if `return_extras` was set to `true` in when the connection was created, this will be an array of the durations of each word in the text.
 - `warnings`: if `return_extras` was set to `true` in when the connection was created, this will include any warnings about the synthesis.
-
-<Note>
-The durations array resets its start time for each chunk of audio returned and there is a 0.45 second gap between each chunk of audio. 
-</Note>
+*/ }
 
 -----------
 
