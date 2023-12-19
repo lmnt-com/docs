@@ -107,7 +107,8 @@
     "group": "Speech",
     "pages": [
       "api-reference/speech/synthesize-speech",
-      "api-reference/speech/synthesize-speech-1"
+      "api-reference/speech/synthesize-speech-1",
+      "api-reference/speech/streaming"
     ]
   },
   {

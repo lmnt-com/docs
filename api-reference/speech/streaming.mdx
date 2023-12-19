@@ -1,0 +1,168 @@
+---
+title: Streaming Synthesis Websocket API
+sidebarTitle: Streaming Websocket
+icon: signal-stream
+description: Our ultra-low latency, full-duplex streaming websocket API. With this API, you can stream text to our servers and receive synthesized audio in real-time.
+---
+<Card>
+The endpoint for our streaming websocket API is `wss://api.lmnt.com/v1/ai/speech/stream`.
+</Card>
+
+## Overview
+Our streaming websocket API is ideal for applications such as voice assistants and chatbots that require low latency and/or don't have all the text upfront. 
+Our [app.lmnt.com](https://app.lmnt.com) shows an example of streaming from an LLM. With this API, you can stream text to our servers and receive synthesized audio in real-time.
+
+## Protocol
+Our streaming websocket uses a bidirectional protocol that sends both text and binary data. 
+The protocol is based on the [WebSocket Protocol](https://tools.ietf.org/html/rfc6455) and [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
+
+### First message
+The first message sent to the server must be a JSON object with the following fields:
+
+<ResponseField name='X-API-Key' type='string' required>
+Your API key. View your API key in your account page on https://app.lmnt.com/account.
+</ResponseField>
+<ResponseField name='voice' type='string' required>
+The voice id of the voice to use for synthesis. Voice ids can be retrieved by a call to `List voices`.
+</ResponseField>
+<ResponseField name='speed' type='float'>
+A float between 0.25 (slow) and 2.0 (fast) that controls the talking speed of the synthesized speech. A value of 1.0 is normal speed.
+</ResponseField>
+<ResponseField name='return_extras' type='boolean'>
+Controls whether the server will return extra information about the synthesis. This information includes `durations`, `buffer_empty`, and `warnings`. See the [Receiving Extras](#receiving-extras) section for more information.
+</ResponseField>
+
+```JavaScript
+{
+    "X-API-Key": "<LMNT_API_KEY>",
+    "voice": "curtis",
+    "speed": 1.0,
+    "return_extras": true,
+}
+```
+
+### Sending text
+After the first message, you can send text to the server as a JSON object:
+
+```JavaScript
+{
+    "text": "Hello, world!",
+}
+```
+
+The text you send can be split at any point. For example, sending:
+```JavaScript
+{"text": "This is a test of the emergency broadcast system"}
+```
+
+is semantically equivalent to sending:
+```JavaScript
+{"text": "This is a test of the eme"}
+``` 
+and then sending:
+```JavaScript
+{"text": "rgency broadcast system"}
+```
+
+### Flushing (trigger synthesis)
+If you want to force the server to synthesize the text that it has without closing the connection, you can send a JSON object with the `flush` field set to `true`:
+
+```JavaScript
+{
+    "flush": true,
+}
+```
+<Warning>
+Be careful when using `flush`. Our models are designed to factor in context when synthesizing audio. When flushing the buffer at arbitrary points, your speech may sound less natural.
+</Warning>
+
+### The last message
+If you are done sending text to the server, you can close the connection by sending a JSON object with the `eof` field set to `true`. This will cause the server to synthesize all the text it has and then close the connection.
+
+```JavaScript
+{
+    "eof": true,
+}
+```
+
+
+
+### Receiving audio
+Once the server has received enough text, the server will respond with chunks of 96kbps mono MP3 audio with a sampling rate of 24kHz. As more text is streamed to the server, the server will continue to send more audio chunks. The audio chunks are sent as binary data.
+
+<Tip>To produce the most natural-sounding speech, our API waits for roughly two full sentences to be sent before synthesizing audio. If you want to receive audio before this threshold is met, you can use the `flush` field to force the server to synthesize the text it has.</Tip>
+
+### Receiving extras
+If you set the `return_extras` field to `true` in the first message, the server will also send extra information about each synthesized chunk. This information is sent as a serialized JSON object (string) and will be sent __before__ its corresponding audio chunk. The extra information includes:
+
+
+<ResponseField name="durations" type="array of duration objects">
+  An array of objects that detail the duration of each text token in the synthesized chunk. This information is useful for applications that need to synchronize the synthesized audio with the text that was sent to the server. The format of each object is described below.
+  <Expandable title="properties">
+    Each object describes the duration of a chunk of text (e.g., words, punctuation, and spaces) with the following keys:
+    <ResponseField name="text" type="string">
+      The text itself.
+    </ResponseField>
+    <ResponseField name="start" type="number">
+      The time at which the text starts, in seconds
+    </ResponseField>
+    <ResponseField name="duration" type="number">
+      The overall duration of the text, in seconds
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<Note>
+The durations array resets its start time for each chunk of audio and there is a 0.45 second silence appended to the end of each chunk of audio that is 
+not captured in the durations array. 
+</Note>
+<ResponseField name='buffer_empty' type='boolean'>
+Indicates whether the server has finished synthesizing all the text that it has received. This is useful for applications that want to know when the server has finished synthesizing all the text that it has without closing the connection.
+</ResponseField>
+<ResponseField name='warning' type='string'>
+Contains any warnings that the server has encountered during synthesis, such as exceeding the number of free fast characters.
+</ResponseField>
+
+Here is an example of the extra information that the server sends:
+```JavaScript
+{
+    "durations": [
+        {
+        "text": "",
+        "start": 0,
+        "duration": 0.2
+        }
+        {
+        "text": "Using",
+        "start": 0.2,
+        "duration": 0.4
+        }
+        {
+        "text": " ",
+        "start": 0.6,
+        "duration": 0.025
+        }
+        {
+        "text": "LMNT",
+        "start": 0.625,
+        "duration": 0.425
+        } 
+        {
+        "text": "",
+        "start": 1.05,
+        "duration": 0.025
+        } 
+        ...
+    ]
+    "buffer_empty": false,
+    "warning": "string",
+}
+```
+<Warning>
+Note that the extra data JSON is always sent __before__ the audio chunk that it corresponds to. Take care to interpret incoming data correctly. Audio is sent as `bytes` and extra data is sent as a `string`.
+</Warning>
+
+### Errors
+Any errors will lead to the server closing the connection.
+
+## Examples
+For an example of how to use our streaming websocket API, see our [Python SDK source code](https://github.com/lmnt-com/lmnt-python/blob/master/src/lmnt/api.py).
