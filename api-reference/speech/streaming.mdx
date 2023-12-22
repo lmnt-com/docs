@@ -112,8 +112,7 @@ If you set the `return_extras` field to `true` in the first message, the server 
   </Expandable>
 </ResponseField>
 <Note>
-The durations array resets its start time for each chunk of audio and there is a 0.45 second silence appended to the end of each chunk of audio that is 
-not captured in the durations array. 
+The durations array resets its start time for each chunk of audio.
 </Note>
 <ResponseField name='buffer_empty' type='boolean'>
 Indicates whether the server has finished synthesizing all the text that it has received. This is useful for applications that want to know when the server has finished synthesizing all the text that it has without closing the connection.

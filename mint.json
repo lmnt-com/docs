@@ -96,7 +96,8 @@
         "group": "Reference",
         "pages": ["sdk/node/reference/speech", "sdk/node/reference/streaming"]
       },
-    "sdk/node/code"]
+    "sdk/node/code",
+    "sdk/node/changelog"]
   },
   {
     "group": "Unity",
